@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#5d1f2d" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" href="data:," />
+    <title>S369 Perfume | Signature Eau de Parfum</title>
+
+    <style>
+      /* ===============================
+         LOGIN / LOGOUT BAR
+         =============================== */
+
+      #authBar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 15px;
+        padding: 10px 5%;
+        background: #fff;
+        border-bottom: 1px solid #eee;
+        min-height: 48px;
+      }
+
+      #authBar .auth-welcome {
+        font-size: 14px;
+        color: #333;
+      }
+
+      #authBar .auth-button {
+        padding: 8px 16px;
+        border: none;
+        background: #111;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      #authBar .auth-button:hover {
+        background: #333;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div data-header></div>
+
+    <!-- LOGIN / LOGOUT -->
+    <div id="authBar"></div>
+
+    <main class="page-wrap">
+      <!-- ================= HERO ================= -->
+
+      <section class="hero">
+        <video
+          class="hero-video"
+          autoplay
+          muted
+          loop
+          playsinline
+          poster="assets/images/hero.jpg"
+        >
+          <source src="assets/videos/hero-perfume.mp4" type="video/mp4" />
+        </video>
+
+        <div class="hero-content">
+          <p class="eyebrow">THE HOUSE OF S369</p>
+
+          <h1>
+            Wear a scent<br />
+            <em>that stays.</em>
+          </h1>
+
+          <p class="hero-copy">
+            Six signature Eau de Parfum creations — from warm tobacco and
+            vanilla to fresh citrus, woods, saffron and oud.
+          </p>
+
+          <div class="button-row">
+            <a class="btn btn-primary" href="shop.html">
+              Shop the collection
+            </a>
+
+            <a class="btn btn-outline" href="#discover">
+              Discover the scents
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= BENEFITS ================= -->
+
+      <section class="benefit-bar">
+        <div class="benefit">
+          <strong>06</strong>
+          <span>Signature fragrances</span>
+        </div>
+
+        <div class="benefit">
+          <strong>EDP</strong>
+          <span>Eau de Parfum</span>
+        </div>
+
+        <div class="benefit">
+          <strong>03</strong>
+          <span>30ml · 50ml · 100ml</span>
+        </div>
+
+        <div class="benefit">
+          <strong>S369</strong>
+          <span>Made to be remembered</span>
+        </div>
+      </section>
+
+      <!-- ================= DISCOVER ================= -->
+
+      <section class="section" id="discover">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">SIGNATURE COLLECTION</p>
+
+            <h2>Choose your mood.</h2>
+          </div>
+
+          <p>
+            Explore the complete S369 fragrance wardrobe. Select your bottle
+            size and add it directly to your bag.
+          </p>
+        </div>
+
+        <div class="product-grid" id="featuredGrid"></div>
+      </section>
+
+      <!-- ================= STORY ================= -->
+
+      <section class="story-split">
+        <div class="story-image craft-film">
+          <video
+            autoplay
+            muted
+            loop
+            playsinline
+            poster="assets/images/story.jpg"
+          >
+            <source src="assets/videos/about-craft-web.mp4" type="video/mp4" />
+          </video>
+        </div>
+
+        <div class="story-content">
+          <p class="eyebrow">THE S369 WORLD</p>
+
+          <h2>Luxury without the noise.</h2>
+
+          <p>
+            Warm and cool. Fresh and mysterious. Elegant and daring. S369 is a
+            wardrobe of fragrance moods designed to complement the way you want
+            to show up.
+          </p>
+
+          <div>
+            <a class="btn btn-primary" href="about.html"> Our story </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= FRAGRANCE GUIDE ================= -->
+
+      <section class="section dark">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">THE FRAGRANCE GUIDE</p>
+
+            <h2>Six ways to leave a mark.</h2>
+          </div>
+
+          <p>
+            Each creation has a distinct note story, from tobacco and vanilla to
+            bergamot, saffron, oud, woods and florals.
+          </p>
+        </div>
+
+        <div class="notes-board" id="noteBoard"></div>
+      </section>
+
+      <!-- ================= REVIEWS ================= -->
+
+      <section class="section reviews-section" id="reviews">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">CUSTOMER STORIES</p>
+
+            <h2>Loved, and remembered.</h2>
+          </div>
+
+          <p>
+            Real impressions from the people who wear S369. Share yours with the
+            community.
+          </p>
+        </div>
+
+        <div class="reviews-layout">
+          <div>
+            <div class="review-summary">
+              <strong id="averageRating"> 5.0 </strong>
+
+              <div>
+                <div class="review-stars">★★★★★</div>
+
+                <span id="reviewCount"> Customer reviews </span>
+              </div>
+            </div>
+
+            <div class="review-list" id="reviewList">
+              <p>Loading customer reviews…</p>
+            </div>
+          </div>
+
+          <!-- REVIEW FORM -->
+
+          <form class="review-form" id="reviewForm">
+            <p class="eyebrow">SHARE YOUR EXPERIENCE</p>
+
+            <h3>Write a review</h3>
+
+            <label> Your rating </label>
+
+            <div class="star-picker">
+              <input type="radio" id="star5" name="rating" value="5" required />
+
+              <label for="star5"> ★ </label>
+
+              <input type="radio" id="star4" name="rating" value="4" />
+
+              <label for="star4"> ★ </label>
+
+              <input type="radio" id="star3" name="rating" value="3" />
+
+              <label for="star3"> ★ </label>
+
+              <input type="radio" id="star2" name="rating" value="2" />
+
+              <label for="star2"> ★ </label>
+
+              <input type="radio" id="star1" name="rating" value="1" />
+
+              <label for="star1"> ★ </label>
+            </div>
+
+            <label for="reviewName"> Your name </label>
+
+            <input
+              id="reviewName"
+              name="name"
+              maxlength="80"
+              required
+              placeholder="Name"
+            />
+
+            <label for="reviewTitle"> Review title </label>
+
+            <input
+              id="reviewTitle"
+              name="title"
+              maxlength="100"
+              required
+              placeholder="A few words about your experience"
+            />
+
+            <label for="reviewMessage"> Your review </label>
+
+            <textarea
+              id="reviewMessage"
+              name="message"
+              maxlength="800"
+              required
+              placeholder="What did you love about your S369 fragrance?"
+            ></textarea>
+
+            <input
+              class="honeypot"
+              name="website"
+              tabindex="-1"
+              autocomplete="off"
+            />
+
+            <button class="btn btn-full" type="submit">Submit review</button>
+
+            <p id="reviewStatus" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <div data-footer></div>
+
+    <!-- ===============================
+         JAVASCRIPT
+         =============================== -->
+
+    <script src="assets/js/config.js"></script>
+
+    <script src="assets/js/products.js"></script>
+
+    <script src="assets/js/store.js"></script>
+
+    <script src="assets/js/reviews.js"></script>
+
+    <script>
+      // ======================================================
+      // EXISTING S369 WEBSITE
+      // ======================================================
+
+      S369.globalChrome("home");
+
+      // ======================================================
+      // FEATURED PRODUCTS
+      // ======================================================
+
+      S369.renderShopGrid(
+        document.getElementById("featuredGrid"),
+        S369.PRODUCTS,
+      );
+
+      // ======================================================
+      // FRAGRANCE NOTES
+      // ======================================================
+
+      document.getElementById("noteBoard").innerHTML = S369.PRODUCTS.map(
+        (p, i) =>
+          `
+            <a
+              class="note-tile"
+              href="product.html?id=${p.id}"
+            >
+
+              <span>
+                0${i + 1}
+              </span>
+
+              <strong>
+                ${p.name}
+              </strong>
+
+              <p>
+                ${p.notes.map((n) => n.value).join(" · ")}
+              </p>
+
+            </a>
+            `,
+      ).join("");
+
+      // ======================================================
+      // REVIEWS
+      // ======================================================
+
+      S369Reviews.init();
+
+      // ======================================================
+      // LOGIN / REGISTER STATUS
+      // ======================================================
+
+      function updateAuthBar() {
+        const authBar = document.getElementById("authBar");
+
+        const token = localStorage.getItem("token");
+
+        const userData = localStorage.getItem("user");
+
+        // ------------------------------------------
+        // USER IS LOGGED IN
+        // ------------------------------------------
+
+        if (token && userData) {
+          try {
+            const user = JSON.parse(userData);
+
+            authBar.innerHTML = `
+
+              <span class="auth-welcome">
+                Welcome,
+                <strong>${user.name}</strong>
+              </span>
+
+              <button
+                class="auth-button"
+                type="button"
+                onclick="logout()"
+              >
+                Logout
+              </button>
+
+            `;
+          } catch (error) {
+            console.error("User data error:", error);
+
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            showLoginButton();
+          }
+        } else {
+          // ------------------------------------------
+          // USER IS NOT LOGGED IN
+          // ------------------------------------------
+
+          showLoginButton();
+        }
+      }
+
+      // ======================================================
+      // SHOW LOGIN BUTTON
+      // ======================================================
+
+      function showLoginButton() {
+        const authBar = document.getElementById("authBar");
+
+        authBar.innerHTML = `
+
+          <a
+            href="login.html"
+            class="auth-button"
+          >
+            Login / Register
+          </a>
+
+        `;
+      }
+
+      // ======================================================
+      // LOGOUT
+      // ======================================================
+
+      function logout() {
+        localStorage.removeItem("token");
+
+        localStorage.removeItem("user");
+
+        window.location.href = "index.html";
+      }
+
+      // ======================================================
+      // INITIAL AUTH CHECK
+      // ======================================================
+
+      updateAuthBar();
+    </script>
+  </body>
+</html>

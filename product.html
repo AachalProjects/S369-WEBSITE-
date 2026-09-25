@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#5d1f2d" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" href="data:," />
+    <title>Product | S369 Perfume</title>
+    <meta name="description" content="S369 Perfume — signature Eau de Parfum in 30ml, 50ml and 100ml." />
+  </head>
+  <body>
+    <div data-header></div>
+    <main class="page-wrap">
+      <section class="product-page">
+        <div class="product-layout">
+          <div class="gallery-main">
+            <img id="pImage" alt="" />
+          </div>
+          <div class="product-detail">
+            <div class="breadcrumbs">
+              <a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <span id="pCrumb"></span>
+            </div>
+            <p class="eyebrow">S369 · EAU DE PARFUM</p>
+            <h1 id="pName"></h1>
+            <div class="product-tagline-large" id="pTag"></div>
+            <p class="product-description" id="pDesc"></p>
+            <div class="product-price-large">
+              <strong id="pPrice"></strong>
+              <del id="pMrp"></del>
+            </div>
+            <span class="label">Select size</span>
+            <div class="size-pills" id="pSizes"></div>
+            <span class="label">Quantity</span>
+            <div class="buy-row" style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <div class="qty-control">
+                <button id="qtyMinus">−</button>
+                <span id="qtyVal">1</span>
+                <button id="qtyPlus">+</button>
+              </div>
+              <button class="add-main" id="pAdd" style="flex: 1;">Add to bag</button>
+              <button class="btn btn-dark" id="pBuyNow" style="flex: 1; padding: 14px; background: #5d1f2d; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">⚡ Buy Now</button>
+            </div>
+            <button class="btn btn-outline-dark btn-full" id="pWish" style="margin-top: 15px;">
+              ♡ Save to wishlist
+            </button>
+            <div class="notes-accordion">
+              <details open>
+                <summary>Fragrance notes <span>+</span></summary>
+                <div class="detail-body note-lines" id="pNotes"></div>
+              </details>
+              <details>
+                <summary>Available sizes <span>+</span></summary>
+                <div class="detail-body">Available in 30ml, 50ml and 100ml Eau de Parfum.</div>
+              </details>
+              <details>
+                <summary>Ordering & payment <span>+</span></summary>
+                <div class="detail-body">
+                  Select your size and click Add to Bag or Buy Now for immediate checkout via Online Payment (Razorpay) or Cash on Delivery (COD).
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="section alt">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">YOU MAY ALSO LIKE</p>
+            <h2>Continue exploring.</h2>
+          </div>
+        </div>
+        <div class="product-grid" id="related"></div>
+      </section>
+    </main>
+    <div data-footer></div>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/products.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script>
+      S369.globalChrome('shop');
+      const id = new URLSearchParams(location.search).get('id') || 'alpha-9';
+      const p = S369.productById(id) || S369.PRODUCTS[0];
+      let size = '30ml', qty = 1;
+
+      document.title = `${p.name} | S369 Perfume`;
+      pImage.src = S369.productImageSrc(p);
+      pImage.referrerPolicy = 'no-referrer';
+      pImage.alt = `S369 ${p.name}`;
+      pName.textContent = p.name;
+      pCrumb.textContent = p.name;
+      pTag.textContent = p.tagline;
+      pDesc.textContent = p.description;
+      pNotes.innerHTML = (p.notes || []).map(n => `<div><b>${n.label}</b><span>${n.value}</span></div>`).join('');
+
+      function price() {
+        const prices = p.prices || S369.SIZES;
+        const priceInfo = prices[size] || S369.SIZES[size];
+        pPrice.textContent = S369.fmt(priceInfo.price);
+        pMrp.textContent = S369.fmt(priceInfo.mrp);
+      }
+
+      pSizes.innerHTML = Object.keys(S369.SIZES).map(s => `<button class="size-pill ${s === size ? 'active' : ''}" data-size="${s}">${s}</button>`).join('');
+      pSizes.onclick = e => {
+        let b = e.target.closest('[data-size]');
+        if (!b) return;
+        size = b.dataset.size;
+        pSizes.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+        price();
+      };
+
+      qtyMinus.onclick = () => { qty = Math.max(1, qty - 1); qtyVal.textContent = qty; };
+      qtyPlus.onclick = () => { qty++; qtyVal.textContent = qty; };
+      pAdd.onclick = () => S369.addToCart(p.id, size, qty);
+
+      pBuyNow.onclick = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          S369.toast("Please login to proceed to checkout.");
+          setTimeout(() => { location.href = "login.html"; }, 700);
+          return;
+        }
+        const success = await S369.addCartToServer(p.id, size, qty);
+        if (success) {
+          location.href = "checkout.html";
+        }
+      };
+
+      function wishState() {
+        pWish.textContent = S369.getWishlist().includes(p.id) ? '♥ Saved to wishlist' : '♡ Save to wishlist';
+      }
+      pWish.onclick = () => { S369.toggleWishlist(p.id); wishState(); };
+      wishState();
+      price();
+      S369.renderShopGrid(related, S369.PRODUCTS.filter(x => x.id !== p.id).slice(0, 3));
+    </script>
+  </body>
+</html>

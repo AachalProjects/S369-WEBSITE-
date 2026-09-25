@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#5d1f2d" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" href="data:," />
+    <title>Shop S369 Perfume | All Fragrances</title>
+    <meta name="description" content="S369 Perfume — signature Eau de Parfum in 30ml, 50ml and 100ml." />
+  </head>
+  <body>
+    <div data-header></div>
+    <main class="page-wrap">
+      <section class="page-hero">
+        <p class="eyebrow">S369 EAU DE PARFUM</p>
+        <h1>The Collection</h1>
+        <p>Signature fragrances. Three bottle sizes. Search by fragrance name or note, then choose the bottle that fits your ritual.</p>
+      </section>
+
+      <section class="toolbar">
+        <div class="search-inline">
+          <input id="shopSearch" type="search" placeholder="Search fragrance or note…" />
+        </div>
+        <select id="shopSort">
+          <option value="featured">Sort: Featured</option>
+          <option value="az">Name A–Z</option>
+          <option value="za">Name Z–A</option>
+          <option value="low">Price low to high</option>
+          <option value="high">Price high to low</option>
+        </select>
+      </section>
+
+      <section class="section">
+        <div class="product-grid" id="shopGrid"></div>
+      </section>
+    </main>
+    <div data-footer></div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/products.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script>
+      S369.globalChrome('shop');
+      const grid = document.getElementById('shopGrid');
+      const q = document.getElementById('shopSearch');
+      const sort = document.getElementById('shopSort');
+
+      async function draw() {
+        let products = await S369.loadProductsFromApi();
+        let a = [...products];
+        let s = q.value.trim().toLowerCase();
+
+        if (s) {
+          a = a.filter(p => (p.name + ' ' + p.tagline + ' ' + (p.short || '') + ' ' + (p.keywords || []).join(' ')).toLowerCase().includes(s));
+        }
+
+        if (sort.value === 'az') a.sort((x, y) => x.name.localeCompare(y.name));
+        if (sort.value === 'za') a.sort((x, y) => y.name.localeCompare(x.name));
+        if (sort.value === 'low') a.sort((x, y) => (x.prices?.['30ml']?.price || 399) - (y.prices?.['30ml']?.price || 399));
+        if (sort.value === 'high') a.sort((x, y) => (y.prices?.['30ml']?.price || 399) - (x.prices?.['30ml']?.price || 399));
+
+        if (!a.length) {
+          grid.innerHTML = '<div class="empty-state"><h3>No fragrance found.</h3><p>Try another name or note.</p></div>';
+          return;
+        }
+
+        S369.renderShopGrid(grid, a);
+      }
+
+      q.oninput = draw;
+      sort.onchange = draw;
+      draw();
+    </script>
+  </body>
+</html>

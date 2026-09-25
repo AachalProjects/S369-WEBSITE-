@@ -1,0 +1,20 @@
+S369 ONLINE PAYMENT SETUP (RAZORPAY)
+
+1. Log in to Razorpay Dashboard and complete KYC/account activation.
+2. Open Account & Settings > API Keys and generate Live Mode keys.
+3. Open private/config.php on your hosting.
+4. Replace these three placeholders with the matching Razorpay values:
+   PASTE_RAZORPAY_KEY_ID_HERE
+   PASTE_RAZORPAY_KEY_SECRET_HERE
+   PASTE_RAZORPAY_WEBHOOK_SECRET_HERE
+5. In Razorpay Dashboard, add this webhook URL:
+   https://YOUR-DOMAIN.com/api/razorpay-webhook.php
+6. Select payment.captured and payment.failed events and use the same webhook
+   secret that you entered in private/config.php.
+7. First test with Test Mode keys. After a successful test order, replace them
+   with Live Mode keys before accepting customer payments.
+
+SECURITY
+- Never put the Key Secret in an HTML or JavaScript file.
+- Do not share private/config.php publicly.
+- Cash on Delivery is disabled in this package.

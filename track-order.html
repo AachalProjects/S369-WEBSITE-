@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#5d1f2d" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" href="data:," />
+    <title>Track Order | S369 Perfume</title>
+  </head>
+  <body>
+    <div data-header></div>
+    <main class="page-wrap">
+      <section class="page-hero">
+        <p class="eyebrow">S369 ORDERS</p>
+        <h1>Track your order</h1>
+        <p>Enter the order ID and the phone number used at checkout.</p>
+      </section>
+      <section class="content-page">
+        <form class="track-form" id="trackForm">
+          <div class="field">
+            <label>Order ID</label>
+            <input id="orderId" name="order_id" required placeholder="S369-123456" />
+          </div>
+          <div class="field">
+            <label>Phone number</label>
+            <input id="orderPhone" name="phone" required inputmode="tel" placeholder="Enter phone number" />
+          </div>
+          <button class="btn btn-dark" type="submit">Track order</button>
+        </form>
+        <div id="trackResult" class="track-result"></div>
+      </section>
+    </main>
+    <div data-footer></div>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/products.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script>
+      S369.globalChrome('');
+      const qs = new URLSearchParams(location.search);
+      document.getElementById("orderId").value = qs.get("order") || sessionStorage.getItem("s369_last_order") || "";
+      document.getElementById("orderPhone").value = localStorage.getItem("s369_last_phone") || "";
+
+      document.getElementById("trackForm").onsubmit = async (e) => {
+        e.preventDefault();
+        const trackResult = document.getElementById("trackResult");
+        trackResult.innerHTML = '<div class="notice">Checking your order…</div>';
+
+        const order_id = document.getElementById("orderId").value;
+        const phone = document.getElementById("orderPhone").value;
+
+        try {
+          const apiEndpoint = `${S369.CONFIG.apiBase}/orders/track`;
+          const r = await fetch(apiEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ order_id, phone }),
+          });
+
+          const d = await r.json();
+          if (!r.ok || !d.ok) throw new Error(d.message || "Order not found");
+
+          const o = d.order;
+          trackResult.innerHTML = `
+            <article class="order-card live-order">
+              <div class="order-card-top">
+                <div>
+                  <p class="eyebrow">ORDER ID</p>
+                  <h3>${o.id}</h3>
+                  <p>Date: ${new Date(o.created_at).toLocaleString("en-IN")}</p>
+                </div>
+                <strong>${S369.fmt(o.total)}</strong>
+              </div>
+              <div style="margin: 15px 0;">
+                <span class="status-pill" style="padding: 6px 14px; background: #5d1f2d; color: #fff; border-radius: 20px; font-weight: bold;">
+                  Status: ${o.status.toUpperCase()}
+                </span>
+              </div>
+              <p style="margin-bottom: 15px;">
+                <b>Customer:</b> ${o.customer ? o.customer.name : "Valued Customer"} (${o.customer ? o.customer.phone : ""})<br>
+                <b>Payment:</b> ${o.payment_method === "online" ? "Online Payment (Razorpay)" : "Cash on Delivery"} · 
+                <span style="color: ${o.payment_status === 'paid' ? 'green' : 'orange'}; font-weight: bold;">${o.payment_status.toUpperCase()}</span>
+              </p>
+              <div class="track-items" style="border-top: 1px solid #eee; padding-top: 10px;">
+                <h4>Order Items:</h4>
+                ${o.items
+                  .map(
+                    (x) => `
+                  <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                    <span>${x.name} (${x.size}) × ${x.qty}</span>
+                    <strong>${S369.fmt(x.line_total)}</strong>
+                  </div>
+                `
+                  )
+                  .join("")}
+              </div>
+            </article>
+          `;
+        } catch (err) {
+          trackResult.innerHTML = `<div class="notice error-note" style="color: red;">${err.message}</div>`;
+        }
+      };
+    </script>
+  </body>
+</html>

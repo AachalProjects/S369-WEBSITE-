@@ -1,0 +1,5 @@
+node_modules/
+.env
+.env.*
+uploads/
+Add-Content .gitignore "`nprivate/config.php`nprivate/process-webhooks.php`nserver/data/db.json"

@@ -1,0 +1,20 @@
+<?php
+require __DIR__ . '/lib.php';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') respond(['ok'=>false,'message'=>'Method not allowed'],405);
+$in=json_input();
+$storeId=clean((string)($in['store_order_id'] ?? ''),80);
+$paymentId=clean((string)($in['razorpay_payment_id'] ?? ''),120);
+$rpOrderId=clean((string)($in['razorpay_order_id'] ?? ''),120);
+$signature=clean((string)($in['razorpay_signature'] ?? ''),200);
+$order=load_order($storeId);
+if(!$order) respond(['ok'=>false,'message'=>'Order not found.'],404);
+if(($order['razorpay_order_id'] ?? '') !== $rpOrderId) respond(['ok'=>false,'message'=>'Order verification failed.'],400);
+$c=cfg();
+$expected=hash_hmac('sha256',$order['razorpay_order_id'].'|'.$paymentId,$c['razorpay_key_secret']);
+if(!hash_equals($expected,$signature)) respond(['ok'=>false,'message'=>'Payment signature verification failed.'],400);
+$order['payment_status']='paid';
+$order['status']='Order confirmed';
+$order['razorpay_payment_id']=$paymentId;
+$order['paid_at']=date(DATE_ATOM);
+save_order($order);
+respond(['ok'=>true,'order_id'=>$order['id'],'status'=>$order['status'],'total'=>$order['total']]);

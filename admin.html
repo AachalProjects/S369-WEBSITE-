@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Dashboard | S369 Perfume</title>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <style>
+      .admin-layout {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px 60px;
+      }
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #5d1f2d;
+        padding-bottom: 15px;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+      .stat-card {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      }
+      .stat-card h3 {
+        font-size: 14px;
+        color: #666;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .stat-card .value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #5d1f2d;
+      }
+      .section-tabs {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #ccc;
+      }
+      .tab-btn {
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+      }
+      .tab-btn.active {
+        border-bottom-color: #5d1f2d;
+        color: #5d1f2d;
+      }
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .admin-table th, .admin-table td {
+        padding: 14px 18px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+      }
+      .admin-table th {
+        background: #5d1f2d;
+        color: #fff;
+        font-weight: 600;
+      }
+      .status-select {
+        padding: 6px 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 13px;
+      }
+      .action-btn {
+        padding: 6px 12px;
+        background: #5d1f2d;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      .action-btn.delete-btn {
+        background: #b00020;
+      }
+      .action-btn:hover {
+        opacity: 0.9;
+      }
+      .login-modal {
+        max-width: 400px;
+        margin: 80px auto;
+        padding: 30px;
+        background: #fff;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        border-radius: 8px;
+      }
+      .login-modal h2 {
+        margin-bottom: 20px;
+        text-align: center;
+        color: #5d1f2d;
+      }
+      .login-modal .field {
+        margin-bottom: 15px;
+      }
+      .login-modal label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+      .login-modal input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-header></div>
+
+    <main class="page-wrap">
+      <!-- ADMIN LOGIN FORM -->
+      <div id="adminLoginSection" class="login-modal" style="display: none;">
+        <h2>Admin Portal Login</h2>
+        <form id="adminLoginForm">
+          <div class="field">
+            <label>Admin Email</label>
+            <input type="email" id="adminEmail" required placeholder="admin@s369.in" />
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input type="password" id="adminPassword" required placeholder="Password" />
+          </div>
+          <button type="submit" class="btn btn-dark btn-full" style="width: 100%; margin-top: 15px;">Login to Admin Dashboard</button>
+        </form>
+      </div>
+
+      <!-- MAIN ADMIN DASHBOARD -->
+      <div id="adminDashboardSection" class="admin-layout" style="display: none;">
+        <div class="admin-header">
+          <div>
+            <h1>S369 Admin Control Center</h1>
+            <p>Real-time orders, products, users & database cluster management</p>
+          </div>
+          <button id="adminLogoutBtn" class="btn btn-outline-dark">Logout</button>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Total Revenue</h3>
+            <div id="statRevenue" class="value">₹0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Total Orders</h3>
+            <div id="statOrders" class="value">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Pending Orders</h3>
+            <div id="statPending" class="value">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Registered Customers</h3>
+            <div id="statUsers" class="value">0</div>
+          </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="section-tabs">
+          <button class="tab-btn active" data-tab="orders">Orders Management</button>
+          <button class="tab-btn" data-tab="products">Products Catalog</button>
+          <button class="tab-btn" data-tab="users">Customer Accounts</button>
+        </div>
+
+        <!-- ORDERS TAB -->
+        <div id="tabOrders">
+          <h2>All Customer Orders</h2>
+          <div style="overflow-x: auto; margin-top: 15px;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Phone</th>
+                  <th>Amount</th>
+                  <th>Payment Method</th>
+                  <th>Payment Status</th>
+                  <th>Date</th>
+                  <th>Order Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <tr><td colspan="9" style="text-align: center;">Loading orders…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PRODUCTS TAB -->
+        <div id="tabProducts" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2>Product Catalog</h2>
+            <button id="openAddProductModal" class="action-btn" style="padding: 10px 18px; font-size: 14px; font-weight: bold;">+ Add New Product</button>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Name</th>
+                  <th>Tagline</th>
+                  <th>30ml Price</th>
+                  <th>50ml Price</th>
+                  <th>100ml Price</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody">
+                <tr><td colspan="7" style="text-align: center;">Loading products…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- USERS TAB -->
+        <div id="tabUsers" style="display: none;">
+          <h2>Registered Customers</h2>
+          <div style="overflow-x: auto; margin-top: 15px;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Joined Date</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <tr><td colspan="5" style="text-align: center;">Loading users…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD PRODUCT MODAL -->
+      <div id="addProductModal" class="modal-overlay">
+        <div class="modal-content">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: #5d1f2d;">Add New Perfume Product</h2>
+            <button id="closeAddProductModal" style="background: none; border: none; font-size: 22px; cursor: pointer;">&times;</button>
+          </div>
+          <form id="addProductForm">
+            <div class="field" style="margin-bottom: 12px;">
+              <label>Product Name</label>
+              <input type="text" id="prodName" required placeholder="e.g. Royal Oud Velvet" style="width: 100%; padding: 8px;" />
+            </div>
+            <div class="field" style="margin-bottom: 12px;">
+              <label>Tagline</label>
+              <input type="text" id="prodTagline" required placeholder="e.g. The Essence of Royalty" style="width: 100%; padding: 8px;" />
+            </div>
+            <div class="field" style="margin-bottom: 12px;">
+              <label>Image Filename or URL</label>
+              <input type="text" id="prodImage" required placeholder="e.g. alpha-9.jpg" style="width: 100%; padding: 8px;" />
+            </div>
+            <div class="field" style="margin-bottom: 12px;">
+              <label>Description</label>
+              <textarea id="prodDesc" required placeholder="Enter full fragrance description..." style="width: 100%; height: 80px; padding: 8px;"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+              <div style="flex: 1;">
+                <label>30ml Price (₹)</label>
+                <input type="number" id="p30price" value="399" required style="width: 100%; padding: 8px;" />
+              </div>
+              <div style="flex: 1;">
+                <label>50ml Price (₹)</label>
+                <input type="number" id="p50price" value="899" required style="width: 100%; padding: 8px;" />
+              </div>
+              <div style="flex: 1;">
+                <label>100ml Price (₹)</label>
+                <input type="number" id="p100price" value="1499" required style="width: 100%; padding: 8px;" />
+              </div>
+            </div>
+            <button type="submit" class="action-btn" style="width: 100%; padding: 12px; font-size: 16px;">Save Product to Database</button>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <div data-footer></div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/products.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script>
+      S369.globalChrome('');
+
+      const adminLoginSection = document.getElementById("adminLoginSection");
+      const adminDashboardSection = document.getElementById("adminDashboardSection");
+      const adminLoginForm = document.getElementById("adminLoginForm");
+      const adminLogoutBtn = document.getElementById("adminLogoutBtn");
+
+      const addProductModal = document.getElementById("addProductModal");
+      const openAddProductModal = document.getElementById("openAddProductModal");
+      const closeAddProductModal = document.getElementById("closeAddProductModal");
+      const addProductForm = document.getElementById("addProductForm");
+
+      openAddProductModal.onclick = () => addProductModal.style.display = "flex";
+      closeAddProductModal.onclick = () => addProductModal.style.display = "none";
+
+      async function checkAdminAuth() {
+        const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
+        if (!token) {
+          showLogin();
+          return;
+        }
+
+        try {
+          const res = await fetch(`${S369.CONFIG.apiBase}/admin/stats`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            showDashboard(data.stats);
+          } else {
+            showLogin();
+          }
+        } catch (err) {
+          console.error("Admin auth check failed:", err);
+          showLogin();
+        }
+      }
+
+      function showLogin() {
+        adminLoginSection.style.display = "block";
+        adminDashboardSection.style.display = "none";
+      }
+
+      function showDashboard(stats) {
+        adminLoginSection.style.display = "none";
+        adminDashboardSection.style.display = "block";
+        if (stats) renderStats(stats);
+        loadOrders();
+        loadProducts();
+        loadUsers();
+      }
+
+      adminLoginForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("adminEmail").value;
+        const password = document.getElementById("adminPassword").value;
+
+        try {
+          const res = await fetch(`${S369.CONFIG.apiBase}/admin/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || "Admin login failed");
+
+          localStorage.setItem("adminToken", data.token);
+          localStorage.setItem("token", data.token);
+          checkAdminAuth();
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      adminLogoutBtn.onclick = () => {
+        localStorage.removeItem("adminToken");
+        showLogin();
+      };
+
+      function renderStats(stats) {
+        document.getElementById("statRevenue").textContent = S369.fmt(stats.totalRevenue || 0);
+        document.getElementById("statOrders").textContent = stats.totalOrders || 0;
+        document.getElementById("statPending").textContent = stats.pendingOrders || 0;
+        document.getElementById("statUsers").textContent = stats.totalUsers || 0;
+      }
+
+      async function loadOrders() {
+        const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
+        const tbody = document.getElementById("ordersTableBody");
+        try {
+          const res = await fetch(`${S369.CONFIG.apiBase}/admin/orders`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (!res.ok || !data.ok) throw new Error("Failed to load orders");
+
+          if (!data.orders || data.orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No orders found in database.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = data.orders.map(o => `
+            <tr>
+              <td><strong>${o.orderId}</strong></td>
+              <td>${o.customer ? o.customer.name : 'N/A'}<br><small>${o.customer ? o.customer.email : ''}</small></td>
+              <td>${o.customer ? o.customer.phone : 'N/A'}</td>
+              <td><strong>${S369.fmt(o.totalAmount)}</strong></td>
+              <td><span style="text-transform: uppercase; font-weight: bold;">${o.paymentMethod || 'online'}</span></td>
+              <td>
+                <span style="color: ${o.paymentStatus === 'paid' ? 'green' : 'orange'}; font-weight: bold;">
+                  ${o.paymentStatus.toUpperCase()}
+                </span>
+              </td>
+              <td>${new Date(o.createdAt).toLocaleDateString("en-IN")}</td>
+              <td>
+                <select class="status-select" id="status-${o._id}">
+                  <option value="placed" ${o.orderStatus === 'placed' ? 'selected' : ''}>Placed</option>
+                  <option value="processing" ${o.orderStatus === 'processing' ? 'selected' : ''}>Processing</option>
+                  <option value="shipped" ${o.orderStatus === 'shipped' ? 'selected' : ''}>Shipped</option>
+                  <option value="delivered" ${o.orderStatus === 'delivered' ? 'selected' : ''}>Delivered</option>
+                  <option value="cancelled" ${o.orderStatus === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                </select>
+              </td>
+              <td>
+                <button class="action-btn" onclick="updateOrderStatus('${o._id}')">Update</button>
+              </td>
+            </tr>
+          `).join("");
+        } catch (err) {
+          tbody.innerHTML = `<tr><td colspan="9" style="color: red; text-align: center;">${err.message}</td></tr>`;
+        }
+      }
+
+      async function updateOrderStatus(orderMongoId) {
+        const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
+        const select = document.getElementById(`status-${orderMongoId}`);
+        const newStatus = select.value;
+
+        try {
+          const res = await fetch(`${S369.CONFIG.apiBase}/admin/orders/${orderMongoId}/status`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ status: newStatus })
+          });
+          const data = await res.json();
+          if (!res.ok || !data.ok) throw new Error(data.message || "Failed to update order status");
+
+          alert(`Order status updated to ${newStatus}`);
+          checkAdminAuth();
+        } catch (err) {
+          alert(err.message);
+        }
+      }
+
+      async function loadProducts() {
+        const tbody = document.getElementById("productsTableBody");
+        try {
+          const res = await fetch(`${S369.CONFIG.apiBase}/products`);
+          const data = await res.json();
+          if (!res.ok || !data.ok) throw new Error("Failed to load products");
+
+          tbody.innerHTML = data.products.map(p => `
+            <tr>
+              <td><img src="assets/images/products/${p.image}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" alt=""></td>
+              <td><strong>${p.name}</strong></td>
+              <td>${p.tagline}</td>
+              <td>${S369.fmt(p.prices?.['30ml']?.price || 399)}</td>
+              <td>${S369.fmt(p.prices?.['50ml']?.price || 899)}</td>
+              <td>${S369.fmt(p.prices?.['100ml']?.price || 1499)}</td>
+              <td>
+                <button class="action-btn delete-btn" onclick="deleteProduct('${p.id}')">Delete</button>
+              </td>
+            </tr>
+          `).join("");
+        } catch (err) {
+          tbody.innerHTML = `<tr><td colspan="7" style="color: red; text-align: center;">${err.message}</td></tr>`;
+        }
+      }
+
+      addProductForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
+
+        const name = document.getElementById("prodName").value;
+        const tagline = document.getElementById("prodTagline").value;
+        const image = document.getElementById("prodImage").value;
+        const description = document.getElementById("prodDesc").value;
+
+        const prices = {
+          "30ml": { price: Number(document.getElementById("p30price").value), mrp: Number(document.getElementById("p30price").value) * 2 },
+          "50ml": { price: Number(document.getElementById("p50price").value), mrp: Number(document.getElementById("p50price").value) * 2 },
+          "100ml": { price: Number(document.getElementById("p100price").value), mrp: Number(document.getElementById("p100price").value) * 2 }
+        };
+
+        try {
+          const res = await fetch(`${S369.CONFIG.apiBase}/admin/products`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ name, tagline, image, description, prices })
+          });
+          const data = await res.json();
+          if (!res.ok || !data.ok) throw new Error(data.message || "Failed to add product");
+
+          alert("Product added successfully to database!");
+          addProductModal.style.display = "none";
+          addProductForm.reset();
+          loadProducts();
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      async function deleteProduct(id) {
+        if (!confirm(`Are you sure you want to delete product '${id}'?`)) return;
+        const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
+
+        try {
+          const res = await fetch(`${S369.CONFIG.apiBase}/admin/products/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (!res.ok || !data.ok) throw new Error(data.message || "Failed to delete product");
+
+          alert("Product deleted successfully");
+          loadProducts();
+        } catch (err) {
+          alert(err.message);
+        }
+      }
+
+      async function loadUsers() {
+        const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
+        const tbody = document.getElementById("usersTableBody");
+        try {
+          const res = await fetch(`${S369.CONFIG.apiBase}/admin/users`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (!res.ok || !data.ok) throw new Error("Failed to load users");
+
+          if (!data.users || data.users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No registered users found.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = data.users.map(u => `
+            <tr>
+              <td><small>${u._id}</small></td>
+              <td><strong>${u.name}</strong></td>
+              <td>${u.email}</td>
+              <td><span style="font-weight: bold; color: ${u.role === 'admin' ? '#5d1f2d' : '#333'}">${u.role.toUpperCase()}</span></td>
+              <td>${new Date(u.createdAt).toLocaleDateString("en-IN")}</td>
+            </tr>
+          `).join("");
+        } catch (err) {
+          tbody.innerHTML = `<tr><td colspan="5" style="color: red; text-align: center;">${err.message}</td></tr>`;
+        }
+      }
+
+      // Tab Switching
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          const tab = btn.dataset.tab;
+          document.getElementById("tabOrders").style.display = tab === "orders" ? "block" : "none";
+          document.getElementById("tabProducts").style.display = tab === "products" ? "block" : "none";
+          document.getElementById("tabUsers").style.display = tab === "users" ? "block" : "none";
+        };
+      });
+
+      checkAdminAuth();
+    </script>
+  </body>
+</html>

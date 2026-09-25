@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#5d1f2d" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" href="data:," />
+    <title>Secure Checkout | S369 Perfume</title>
+    <meta name="description" content="Secure checkout for S369 Perfume." />
+  </head>
+  <body>
+    <div data-header></div>
+    <main class="page-wrap">
+      <section class="checkout">
+        <form id="checkoutForm" class="checkout-shell">
+          <div class="checkout-main">
+            <p class="eyebrow">SECURE CHECKOUT</p>
+            <h2>Complete your order</h2>
+            <div class="notice secure-notice">
+              🔒 Your amount is recalculated on the server before payment.
+              Payment secrets are never stored in this page.
+            </div>
+            <section class="form-section">
+              <h3>Contact</h3>
+              <div class="form-grid">
+                <div class="field full">
+                  <label>Email or mobile number</label>
+                  <input name="contact" required autocomplete="email" placeholder="email@example.com" />
+                </div>
+              </div>
+            </section>
+            <section class="form-section">
+              <h3>Delivery address</h3>
+              <div class="form-grid">
+                <div class="field">
+                  <label>First name</label>
+                  <input name="firstName" required autocomplete="given-name" placeholder="First Name" />
+                </div>
+                <div class="field">
+                  <label>Last name</label>
+                  <input name="lastName" required autocomplete="family-name" placeholder="Last Name" />
+                </div>
+                <div class="field full">
+                  <label>Address</label>
+                  <input name="address" required autocomplete="street-address" placeholder="Flat, Street, House No." />
+                </div>
+                <div class="field">
+                  <label>City</label>
+                  <input name="city" required autocomplete="address-level2" placeholder="City" />
+                </div>
+                <div class="field">
+                  <label>State</label>
+                  <input name="state" required autocomplete="address-level1" placeholder="State" />
+                </div>
+                <div class="field">
+                  <label>PIN code</label>
+                  <input
+                    name="pin"
+                    inputmode="numeric"
+                    pattern="[0-9]{6}"
+                    maxlength="6"
+                    required
+                    autocomplete="postal-code"
+                    placeholder="6-digit PIN"
+                  />
+                </div>
+                <div class="field">
+                  <label>Phone</label>
+                  <input
+                    name="phone"
+                    inputmode="tel"
+                    required
+                    autocomplete="tel"
+                    placeholder="Mobile Number"
+                  />
+                </div>
+                <div class="field full">
+                  <label>Order notes (optional)</label>
+                  <textarea
+                    name="notes"
+                    placeholder="Delivery instructions, landmark, etc."
+                  ></textarea>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <h3>Payment Method</h3>
+              <p class="payment-availability" id="paymentAvailability">
+                Choose your preferred payment method.
+              </p>
+
+              <div class="radio-cards">
+                <!-- ONLINE PAYMENT -->
+                <label class="radio-card" style="display: flex; gap: 12px; padding: 14px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 10px; cursor: pointer;">
+                  <input type="radio" name="payment" value="online" checked />
+                  <span>
+                    <b>Online Payment (Razorpay)</b><br />
+                    <small style="color: #666;">
+                      UPI, Credit Card, Debit Card, Net Banking via Razorpay.
+                    </small>
+                  </span>
+                </label>
+
+                <!-- COD -->
+                <label class="radio-card" style="display: flex; gap: 12px; padding: 14px; border: 1px solid #ccc; border-radius: 6px; cursor: pointer;">
+                  <input type="radio" name="payment" value="cod" />
+                  <span>
+                    <b>Cash on Delivery (COD)</b><br />
+                    <small style="color: #666;">
+                      Pay cash when your perfume is delivered to your doorstep.
+                    </small>
+                  </span>
+                </label>
+              </div>
+            </section>
+
+            <button
+              id="placeOrderBtn"
+              class="btn btn-dark btn-full"
+              type="submit"
+              style="margin-top: 20px;"
+            >
+              Place secure order
+            </button>
+            <p class="checkout-legal" style="margin-top: 10px; font-size: 13px; color: #777;">
+              By placing an order, you agree to the S369
+              <a href="policies.html#terms">Terms</a> and
+              <a href="policies.html#privacy">Privacy Policy</a>.
+            </p>
+          </div>
+
+          <aside class="checkout-summary">
+            <h2>Your order</h2>
+            <div id="checkoutItems"></div>
+            <div id="checkoutTotals"></div>
+            <div class="trust-box">
+              <b>Authentic S369 fragrances</b>
+              <span>30ml · 50ml · 100ml Eau de Parfum</span>
+            </div>
+          </aside>
+        </form>
+      </section>
+    </main>
+    <div data-footer></div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/products.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script>
+      S369.globalChrome('');
+    </script>
+    <script src="assets/js/checkout.js"></script>
+  </body>
+</html>

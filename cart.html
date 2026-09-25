@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Shopping Bag — S369 Perfume</title>
+
+    <link rel="stylesheet" href="assets/css/styles.css" />
+
+    <style>
+      .cart-page {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px 60px;
+      }
+
+      .cart-title {
+        margin-bottom: 25px;
+      }
+
+      .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 20px 0;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .cart-item-info {
+        flex: 1;
+      }
+
+      .cart-item-name {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .cart-item-size {
+        margin-top: 5px;
+        font-size: 14px;
+        opacity: 0.7;
+      }
+
+      .cart-item-price {
+        margin-top: 8px;
+        font-weight: 600;
+      }
+
+      .qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .qty-btn {
+        width: 34px;
+        height: 34px;
+        border: 1px solid #999;
+        background: white;
+        cursor: pointer;
+        font-size: 18px;
+        border-radius: 4px;
+      }
+
+      .qty-btn:hover {
+        background: #f2f2f2;
+      }
+
+      .qty-btn:disabled,
+      .remove-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .qty-value {
+        min-width: 25px;
+        text-align: center;
+      }
+
+      .remove-btn {
+        border: none;
+        background: transparent;
+        color: #b00020;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .cart-summary {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #222;
+        text-align: right;
+      }
+
+      .cart-total {
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .checkout-btn {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 12px 25px;
+        background: #111;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+      }
+
+      .empty-cart {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .login-required {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .login-btn {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 12px 25px;
+        background: #111;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+      }
+
+      @media (max-width: 700px) {
+        .cart-item {
+          flex-wrap: wrap;
+        }
+
+        .cart-item-info {
+          width: 100%;
+          flex-basis: 100%;
+        }
+
+        .qty-controls {
+          margin-right: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="siteHeader"></div>
+
+    <main class="cart-page">
+      <h1 class="cart-title">Shopping Bag</h1>
+
+      <!-- LOGIN REQUIRED -->
+      <div id="loginRequired" class="login-required" style="display: none">
+        <h2>Please Login</h2>
+        <p>Please login to view your shopping bag.</p>
+
+        <a href="login.html" class="login-btn"> Login / Register </a>
+      </div>
+
+      <!-- CART -->
+      <div id="cartContent" style="display: none">
+        <div id="cartList"></div>
+
+        <!-- EMPTY CART -->
+        <div id="emptyCart" class="empty-cart" style="display: none">
+          <h2>Your shopping bag is empty</h2>
+          <p>Add some perfumes to your bag.</p>
+
+          <a href="shop.html" class="checkout-btn"> Continue Shopping </a>
+        </div>
+
+        <!-- CART SUMMARY -->
+        <div id="cartSummary" class="cart-summary" style="display: none">
+          <div class="cart-total">
+            Total:
+            <span id="cartTotal">₹0</span>
+          </div>
+
+          <a href="checkout.html" class="checkout-btn"> Proceed to Checkout </a>
+        </div>
+      </div>
+    </main>
+
+    <div id="siteFooter"></div>
+
+    <!-- S369 JAVASCRIPT -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/products.js"></script>
+    <script src="assets/js/store.js"></script>
+
+    <!-- CART PAGE JAVASCRIPT -->
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        // ==================================================
+        // LOGIN CHECK
+        // ==================================================
+
+        const token = localStorage.getItem("token");
+
+        const loginRequired = document.getElementById("loginRequired");
+
+        const cartContent = document.getElementById("cartContent");
+
+        if (!token) {
+          loginRequired.style.display = "block";
+          cartContent.style.display = "none";
+          return;
+        }
+
+        loginRequired.style.display = "none";
+        cartContent.style.display = "block";
+
+        // ==================================================
+        // LOAD CART
+        // ==================================================
+
+        try {
+          const success = await S369.loadCartFromServer();
+
+          if (!success) {
+            console.error("Unable to load cart from server.");
+          }
+        } catch (error) {
+          console.error("Cart loading error:", error);
+        }
+
+        renderCartPage();
+
+        // ==================================================
+        // RENDER CART
+        // ==================================================
+
+        function renderCartPage() {
+          const cart = S369.getCart();
+
+          const cartList = document.getElementById("cartList");
+
+          const emptyCart = document.getElementById("emptyCart");
+
+          const cartSummary = document.getElementById("cartSummary");
+
+          const cartTotal = document.getElementById("cartTotal");
+
+          cartList.innerHTML = "";
+
+          // ==================================================
+          // EMPTY CART
+          // ==================================================
+
+          if (!cart || cart.length === 0) {
+            emptyCart.style.display = "block";
+            cartSummary.style.display = "none";
+
+            return;
+          }
+
+          emptyCart.style.display = "none";
+          cartSummary.style.display = "block";
+
+          // ==================================================
+          // CART ITEMS
+          // ==================================================
+
+          cart.forEach((item, index) => {
+            const product = S369.productById(item.id);
+
+            if (!product) {
+              console.error("Product not found:", item.id);
+              return;
+            }
+
+            const sizeConfig = S369.SIZES[item.size];
+
+            if (!sizeConfig) {
+              console.error("Size configuration not found:", item.size);
+
+              return;
+            }
+
+            const quantity = Number(item.qty) || 1;
+
+            const price = Number(sizeConfig.price) || 0;
+
+            const itemTotal = price * quantity;
+
+            const div = document.createElement("div");
+
+            div.className = "cart-item";
+
+            div.innerHTML = `
+              <div class="cart-item-info">
+
+                <div class="cart-item-name">
+                  ${product.name}
+                </div>
+
+                <div class="cart-item-size">
+                  Size: ${item.size}
+                </div>
+
+                <div class="cart-item-price">
+                  ₹${itemTotal.toLocaleString("en-IN")}
+                </div>
+
+              </div>
+
+
+              <div class="qty-controls">
+
+                <button
+                  type="button"
+                  class="qty-btn"
+                  data-minus="${index}">
+                  −
+                </button>
+
+
+                <span class="qty-value">
+                  ${quantity}
+                </span>
+
+
+                <button
+                  type="button"
+                  class="qty-btn"
+                  data-plus="${index}">
+                  +
+                </button>
+
+              </div>
+
+
+              <button
+                type="button"
+                class="remove-btn"
+                data-remove="${index}">
+                Remove
+              </button>
+            `;
+
+            cartList.appendChild(div);
+          });
+
+          // ==================================================
+          // TOTAL
+          // ==================================================
+
+          const subtotal = S369.cartSubtotal();
+
+          cartTotal.textContent =
+            "₹" + Number(subtotal).toLocaleString("en-IN");
+
+          // Attach buttons
+          attachCartEvents();
+        }
+
+        // ==================================================
+        // CART BUTTON EVENTS
+        // ==================================================
+
+        function attachCartEvents() {
+          // ==================================================
+          // PLUS
+          // ==================================================
+
+          document.querySelectorAll("[data-plus]").forEach((button) => {
+            button.addEventListener("click", async () => {
+              const index = Number(button.dataset.plus);
+
+              const cart = S369.getCart();
+
+              const item = cart[index];
+
+              if (!item) {
+                return;
+              }
+
+              const newQuantity = Number(item.qty) + 1;
+
+              button.disabled = true;
+
+              try {
+                console.log(
+                  "Updating quantity:",
+                  item.id,
+                  item.size,
+                  newQuantity,
+                );
+
+                const success = await S369.updateCartItemOnServer(
+                  item.id,
+                  item.size,
+                  newQuantity,
+                );
+
+                if (!success) {
+                  alert("Unable to update quantity.");
+
+                  button.disabled = false;
+
+                  return;
+                }
+
+                await S369.loadCartFromServer();
+
+                renderCartPage();
+              } catch (error) {
+                console.error("Quantity update error:", error);
+
+                alert("Unable to update quantity.");
+
+                button.disabled = false;
+              }
+            });
+          });
+
+          // ==================================================
+          // MINUS
+          // ==================================================
+
+          document.querySelectorAll("[data-minus]").forEach((button) => {
+            button.addEventListener("click", async () => {
+              const index = Number(button.dataset.minus);
+
+              const cart = S369.getCart();
+
+              const item = cart[index];
+
+              if (!item) {
+                return;
+              }
+
+              const currentQuantity = Number(item.qty);
+
+              button.disabled = true;
+
+              try {
+                let success = false;
+
+                // ----------------------------------------
+                // QUANTITY > 1
+                // ----------------------------------------
+
+                if (currentQuantity > 1) {
+                  success = await S369.updateCartItemOnServer(
+                    item.id,
+                    item.size,
+                    currentQuantity - 1,
+                  );
+                }
+
+                // ----------------------------------------
+                // QUANTITY = 1
+                // REMOVE ITEM
+                // ----------------------------------------
+                else {
+                  success = await S369.removeCartItemFromServer(
+                    item.id,
+                    item.size,
+                  );
+                }
+
+                if (!success) {
+                  alert("Unable to update quantity.");
+
+                  button.disabled = false;
+
+                  return;
+                }
+
+                await S369.loadCartFromServer();
+
+                renderCartPage();
+              } catch (error) {
+                console.error("Quantity decrease error:", error);
+
+                alert("Unable to update quantity.");
+
+                button.disabled = false;
+              }
+            });
+          });
+
+          // ==================================================
+          // REMOVE
+          // ==================================================
+
+          document.querySelectorAll("[data-remove]").forEach((button) => {
+            button.addEventListener("click", async () => {
+              const index = Number(button.dataset.remove);
+
+              const cart = S369.getCart();
+
+              const item = cart[index];
+
+              if (!item) {
+                return;
+              }
+
+              button.disabled = true;
+
+              try {
+                console.log("Removing item:", item.id, item.size);
+
+                const success = await S369.removeCartItemFromServer(
+                  item.id,
+                  item.size,
+                );
+
+                if (!success) {
+                  alert("Unable to remove item.");
+
+                  button.disabled = false;
+
+                  return;
+                }
+
+                await S369.loadCartFromServer();
+
+                renderCartPage();
+              } catch (error) {
+                console.error("Remove item error:", error);
+
+                alert("Unable to remove item.");
+
+                button.disabled = false;
+              }
+            });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
