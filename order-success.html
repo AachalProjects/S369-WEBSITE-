@@ -19,9 +19,11 @@
         
         <div class="order-box" id="successBox" style="margin: 25px 0;"></div>
 
-        <div class="button-row" style="justify-content:center; gap: 15px; display: flex;">
-          <a class="btn btn-dark" href="shop.html">Continue Shopping</a>
+        <div class="button-row" style="justify-content:center; gap: 15px; display: flex; flex-wrap: wrap;">
+          <a class="btn btn-dark" id="invoiceBtn" target="_blank" href="#" style="background:#5d1f2d; color:#fff;">📄 View & Print Tax Invoice</a>
           <a class="btn btn-outline-dark" id="trackLink" href="track-order.html">Track Order Status</a>
+          <a class="btn btn-outline-dark" href="account.html">My Account & Orders</a>
+          <a class="btn btn-outline-dark" href="shop.html">Continue Shopping</a>
         </div>
       </section>
     </main>
@@ -37,17 +39,21 @@
 
       const successBox = document.getElementById('successBox');
       const trackLink = document.getElementById('trackLink');
+      const invoiceBtn = document.getElementById('invoiceBtn');
 
       if (id) {
         successBox.innerHTML = `
           <div><span>Order ID</span><strong>${id}</strong></div>
-          <div><span>Payment Method</span><strong>${method === 'cod' ? 'Cash on Delivery (COD)' : 'Online Payment (Razorpay)'}</strong></div>
-          <div><span>Payment Status</span><strong>${method === 'cod' ? 'Pending (Pay at delivery)' : 'Paid & Verified'}</strong></div>
-          <div><span>Order Status</span><strong>Placed & Processing</strong></div>
+          <div><span>Payment Method</span><strong>Online Payment (Razorpay Live)</strong></div>
+          <div><span>Payment Status</span><strong style="color:#1b5e20;">Paid & Verified (Tax Invoice Emailed)</strong></div>
+          <div><span>Order Status</span><strong>Placed & In Preparation</strong></div>
+          <div><span>Digital Invoice</span><strong><a href="http://localhost:5000/api/orders/${encodeURIComponent(id)}/invoice" target="_blank" style="color:#5d1f2d; text-decoration:underline; font-weight:700;">Download Official Tax Invoice</a></strong></div>
         `;
-        trackLink.href = 'track-order.html?order=' + encodeURIComponent(id);
+        if (trackLink) trackLink.href = 'track-order.html?order=' + encodeURIComponent(id);
+        if (invoiceBtn) invoiceBtn.href = 'http://localhost:5000/api/orders/' + encodeURIComponent(id) + '/invoice';
       } else {
         successBox.innerHTML = '<p>No recent order was found.</p>';
+        if (invoiceBtn) invoiceBtn.style.display = 'none';
       }
     </script>
   </body>

@@ -7,111 +7,352 @@
     <link rel="stylesheet" href="assets/css/styles.css" />
     <link rel="icon" href="data:," />
     <title>Secure Checkout | S369 Perfume</title>
-    <meta name="description" content="Secure checkout for S369 Perfume." />
+    <meta name="description" content="Secure checkout for S369 Perfume signature Eau de Parfum." />
+
+    <style>
+      .checkout-hero-title {
+        font-family: var(--serif, serif);
+        font-size: 32px;
+        color: #5d1f2d;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .checkout-secure-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f4eee6;
+        color: #5d1f2d;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 6px;
+        margin-bottom: 24px;
+      }
+
+      /* PAYMENT CARDS */
+      .payment-options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .payment-card-label {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px 18px;
+        border: 2px solid #e5ded4;
+        border-radius: 10px;
+        cursor: pointer;
+        background: #fff;
+        transition: all 0.25s ease;
+        position: relative;
+      }
+
+      .payment-card-label:hover {
+        border-color: #c5a059;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      }
+
+      .payment-card-label.selected {
+        border-color: #5d1f2d;
+        background: #fdfbf9;
+      }
+
+      .payment-card-label input[type="radio"] {
+        margin-top: 4px;
+        accent-color: #5d1f2d;
+        width: 18px;
+        height: 18px;
+      }
+
+      .payment-card-info {
+        flex: 1;
+      }
+
+      .payment-card-title {
+        font-weight: 600;
+        font-size: 15px;
+        color: #111;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .payment-badge {
+        font-size: 11px;
+        background: #1b5e20;
+        color: #fff;
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .payment-card-desc {
+        font-size: 13px;
+        color: #666;
+        margin-top: 4px;
+        line-height: 1.4;
+      }
+
+      /* COUPON SECTION */
+      .checkout-coupon-box {
+        background: #faf8f5;
+        border: 1px dashed #cfc5b6;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 20px;
+      }
+
+      .checkout-coupon-box label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #5d1f2d;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+      }
+
+      .coupon-input-group {
+        display: flex;
+        gap: 8px;
+      }
+
+      .coupon-input-group input {
+        flex: 1;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 13.5px;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .coupon-input-group button {
+        padding: 10px 18px;
+        background: #111;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .coupon-input-group button:hover {
+        background: #5d1f2d;
+      }
+
+      .coupon-msg {
+        font-size: 12.5px;
+        margin-top: 8px;
+        min-height: 18px;
+        transition: all 0.2s ease;
+      }
+
+      .coupon-msg.success {
+        color: #1b5e20;
+        font-weight: 600;
+      }
+
+      .coupon-msg.error {
+        color: #b00020;
+      }
+
+      /* ORDER ITEM ROW IN SUMMARY */
+      .checkout-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .checkout-item img {
+        width: 54px;
+        height: 54px;
+        object-fit: cover;
+        border-radius: 6px;
+        background: #f7f4ee;
+      }
+
+      .checkout-item-details {
+        flex: 1;
+      }
+
+      .checkout-item-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111;
+      }
+
+      .checkout-item-sub {
+        font-size: 12px;
+        color: #777;
+        margin-top: 2px;
+      }
+
+      .checkout-item-price {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111;
+      }
+    </style>
   </head>
   <body>
+    <!-- HEADER -->
     <div data-header></div>
+
     <main class="page-wrap">
       <section class="checkout">
         <form id="checkoutForm" class="checkout-shell">
+          <!-- MAIN CHECKOUT FORM COLUMN -->
           <div class="checkout-main">
-            <p class="eyebrow">SECURE CHECKOUT</p>
-            <h2>Complete your order</h2>
-            <div class="notice secure-notice">
-              🔒 Your amount is recalculated on the server before payment.
-              Payment secrets are never stored in this page.
+            <p class="eyebrow">CHECKOUT & DISPATCH</p>
+            <h1 class="checkout-hero-title">Complete your order</h1>
+            <div class="checkout-secure-badge">
+              🔒 256-Bit SSL Recalculated Server Security & Instant Verification
             </div>
+
+            <!-- CONTACT -->
             <section class="form-section">
-              <h3>Contact</h3>
+              <h3>1. Contact Information</h3>
               <div class="form-grid">
                 <div class="field full">
-                  <label>Email or mobile number</label>
-                  <input name="contact" required autocomplete="email" placeholder="email@example.com" />
+                  <label for="contactInput">Email Address (for order tracking & receipt)</label>
+                  <input id="contactInput" name="contact" type="email" required autocomplete="email" placeholder="name@example.com" />
                 </div>
               </div>
             </section>
+
+            <!-- DELIVERY ADDRESS -->
             <section class="form-section">
-              <h3>Delivery address</h3>
+              <h3>2. Shipping Destination</h3>
               <div class="form-grid">
                 <div class="field">
-                  <label>First name</label>
-                  <input name="firstName" required autocomplete="given-name" placeholder="First Name" />
+                  <label for="firstNameInput">First Name (Alphabets only)</label>
+                  <input
+                    id="firstNameInput"
+                    name="firstName"
+                    required
+                    autocomplete="given-name"
+                    placeholder="First Name"
+                    pattern="^[A-Za-z\s]{2,30}$"
+                    title="Please enter a valid first name (alphabets only, min 2 characters)"
+                    oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                  />
                 </div>
                 <div class="field">
-                  <label>Last name</label>
-                  <input name="lastName" required autocomplete="family-name" placeholder="Last Name" />
+                  <label for="lastNameInput">Last Name (Alphabets only)</label>
+                  <input
+                    id="lastNameInput"
+                    name="lastName"
+                    required
+                    autocomplete="family-name"
+                    placeholder="Last Name"
+                    pattern="^[A-Za-z\s]{1,30}$"
+                    title="Please enter a valid last name (alphabets only)"
+                    oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                  />
                 </div>
                 <div class="field full">
-                  <label>Address</label>
-                  <input name="address" required autocomplete="street-address" placeholder="Flat, Street, House No." />
+                  <label for="addressInput">Street Address / Flat / Floor</label>
+                  <input id="addressInput" name="address" required autocomplete="street-address" placeholder="e.g. Flat 402, Royale Crest Apartments, MG Road" />
                 </div>
                 <div class="field">
-                  <label>City</label>
-                  <input name="city" required autocomplete="address-level2" placeholder="City" />
-                </div>
-                <div class="field">
-                  <label>State</label>
-                  <input name="state" required autocomplete="address-level1" placeholder="State" />
-                </div>
-                <div class="field">
-                  <label>PIN code</label>
+                  <label for="cityInput">City</label>
                   <input
+                    id="cityInput"
+                    name="city"
+                    required
+                    autocomplete="address-level2"
+                    placeholder="City"
+                    pattern="^[A-Za-z\s]{2,40}$"
+                    title="City name must contain only alphabets"
+                    oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                  />
+                </div>
+                <div class="field">
+                  <label for="stateInput">State</label>
+                  <input
+                    id="stateInput"
+                    name="state"
+                    required
+                    autocomplete="address-level1"
+                    placeholder="State"
+                    pattern="^[A-Za-z\s]{2,40}$"
+                    title="State name must contain only alphabets"
+                    oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                  />
+                </div>
+                <div class="field">
+                  <label for="pinInput">Postal PIN Code (6 digits)</label>
+                  <input
+                    id="pinInput"
                     name="pin"
                     inputmode="numeric"
-                    pattern="[0-9]{6}"
+                    pattern="^[1-9][0-9]{5}$"
                     maxlength="6"
                     required
                     autocomplete="postal-code"
-                    placeholder="6-digit PIN"
+                    placeholder="6-digit PIN code"
+                    title="Please enter a valid 6-digit PIN code"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                   />
                 </div>
                 <div class="field">
-                  <label>Phone</label>
+                  <label for="phoneInput">Mobile Phone (10 digits)</label>
                   <input
+                    id="phoneInput"
                     name="phone"
                     inputmode="tel"
+                    pattern="^[6-9][0-9]{9}$"
+                    maxlength="10"
                     required
                     autocomplete="tel"
-                    placeholder="Mobile Number"
+                    placeholder="10-digit mobile number"
+                    title="Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                   />
                 </div>
                 <div class="field full">
-                  <label>Order notes (optional)</label>
+                  <label for="notesInput">Delivery Notes & Landmarks (optional)</label>
                   <textarea
+                    id="notesInput"
                     name="notes"
-                    placeholder="Delivery instructions, landmark, etc."
+                    placeholder="Near landmark, gate code, special delivery instructions…"
                   ></textarea>
                 </div>
               </div>
             </section>
 
+            <!-- PAYMENT METHOD -->
             <section class="form-section">
-              <h3>Payment Method</h3>
+              <h3>3. Payment Method</h3>
               <p class="payment-availability" id="paymentAvailability">
-                Choose your preferred payment method.
+                🔒 100% Secure 256-Bit SSL Encrypted Razorpay Checkout
               </p>
 
-              <div class="radio-cards">
-                <!-- ONLINE PAYMENT -->
-                <label class="radio-card" style="display: flex; gap: 12px; padding: 14px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 10px; cursor: pointer;">
+              <div class="payment-options-grid">
+                <!-- RAZORPAY ONLINE EXCLUSIVE -->
+                <label class="payment-card-label selected" id="labelOnline">
                   <input type="radio" name="payment" value="online" checked />
-                  <span>
-                    <b>Online Payment (Razorpay)</b><br />
-                    <small style="color: #666;">
-                      UPI, Credit Card, Debit Card, Net Banking via Razorpay.
-                    </small>
-                  </span>
-                </label>
-
-                <!-- COD -->
-                <label class="radio-card" style="display: flex; gap: 12px; padding: 14px; border: 1px solid #ccc; border-radius: 6px; cursor: pointer;">
-                  <input type="radio" name="payment" value="cod" />
-                  <span>
-                    <b>Cash on Delivery (COD)</b><br />
-                    <small style="color: #666;">
-                      Pay cash when your perfume is delivered to your doorstep.
-                    </small>
-                  </span>
+                  <div class="payment-card-info">
+                    <div class="payment-card-title">
+                      Razorpay Secure Online Checkout
+                      <span class="payment-badge">Instant Verification</span>
+                    </div>
+                    <div class="payment-card-desc">
+                      Pay instantly with UPI (Google Pay, PhonePe, Paytm, BHIM), Credit / Debit Cards (Visa, Mastercard, RuPay, Amex), or Net Banking.
+                    </div>
+                  </div>
                 </label>
               </div>
             </section>
@@ -120,37 +361,65 @@
               id="placeOrderBtn"
               class="btn btn-dark btn-full"
               type="submit"
-              style="margin-top: 20px;"
+              style="margin-top: 24px; padding: 16px; font-size: 15px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;"
             >
-              Place secure order
+              Confirm & Pay Securely
             </button>
-            <p class="checkout-legal" style="margin-top: 10px; font-size: 13px; color: #777;">
-              By placing an order, you agree to the S369
-              <a href="policies.html#terms">Terms</a> and
-              <a href="policies.html#privacy">Privacy Policy</a>.
+
+            <p class="checkout-legal" style="margin-top: 14px; font-size: 13px; color: #777; text-align: center;">
+              By completing your order, you agree to S369 Perfume
+              <a href="policies.html#terms" target="_blank">Terms of Service</a> &
+              <a href="policies.html#privacy" target="_blank">Privacy Policy</a>.
             </p>
           </div>
 
+          <!-- SIDEBAR ORDER SUMMARY -->
           <aside class="checkout-summary">
-            <h2>Your order</h2>
+            <h2>Your Selection</h2>
             <div id="checkoutItems"></div>
+
+            <!-- PROMO / COUPON CODE BOX -->
+            <div class="checkout-coupon-box">
+              <label for="couponInput">Have a VIP Coupon?</label>
+              <div class="coupon-input-group">
+                <input type="text" id="couponInput" placeholder="Try WELCOME10 or S369LUXE" />
+                <button type="button" id="applyCouponBtn" onclick="applyCoupon()">Apply</button>
+              </div>
+              <div id="couponMsg" class="coupon-msg"></div>
+            </div>
+
+            <!-- TOTALS -->
             <div id="checkoutTotals"></div>
-            <div class="trust-box">
-              <b>Authentic S369 fragrances</b>
-              <span>30ml · 50ml · 100ml Eau de Parfum</span>
+
+            <div class="trust-box" style="margin-top: 24px;">
+              <b>The S369 Guarantee</b>
+              <span>100% Original S369 Eau de Parfum formulations made to be remembered.</span>
             </div>
           </aside>
         </form>
       </section>
     </main>
+
+    <!-- FOOTER -->
     <div data-footer></div>
+
+    <!-- SCRIPTS -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/products.js"></script>
-    <script src="assets/js/store.js"></script>
+    <script src="assets/js/config.js?v=2.2"></script>
+    <script src="assets/js/products.js?v=2.2"></script>
+    <script src="assets/js/store.js?v=2.2"></script>
+    <script src="assets/js/checkout.js?v=2.2"></script>
     <script>
-      S369.globalChrome('');
+      S369.globalChrome("checkout");
+
+      function handlePaymentSelection(type) {
+        document.getElementById("labelOnline").classList.toggle("selected", type === "online");
+        document.getElementById("labelCod").classList.toggle("selected", type === "cod");
+        const btn = document.getElementById("placeOrderBtn");
+        if (btn) {
+          btn.textContent = type === "cod" ? "Place Cash on Delivery Order" : "Proceed to Razorpay Payment";
+        }
+      }
     </script>
-    <script src="assets/js/checkout.js"></script>
   </body>
 </html>

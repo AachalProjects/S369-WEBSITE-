@@ -96,7 +96,7 @@ const SIZES = CONFIG.sizes || {};
 // API
 // ======================================================
 
-const API_BASE = "http://localhost:5000";
+window.API_BASE = window.API_BASE || "http://localhost:5000";
 
 
 // ======================================================
@@ -111,12 +111,55 @@ const fmt = (n) =>
   }).format(n);
 
 
-const productById = (id) =>
-  PRODUCTS.find((p) => p.id === id);
+const productById = (id) => {
+  const pool = (window.S369_PRODUCTS && window.S369_PRODUCTS.length)
+    ? window.S369_PRODUCTS
+    : (window.S369?.PRODUCTS || PRODUCTS);
+  return pool.find((p) => String(p.id) === String(id));
+};
 
+
+const getCookie = (name) => {
+  const match = document.cookie.match(new RegExp('(^|;\\s*)' + name + '=([^;]+)'));
+  return match ? decodeURIComponent(match[2]) : null;
+};
 
 const getToken = () =>
-  localStorage.getItem("token");
+  localStorage.getItem("token") || getCookie("s369_token");
+
+const getUser = () => {
+  try {
+    const raw = localStorage.getItem("user") || getCookie("s369_user");
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+const checkAuthSession = async () => {
+  try {
+    const token = getToken();
+    const headers = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const res = await fetch(`${window.API_BASE}/api/auth/me`, {
+      method: "GET",
+      headers,
+      credentials: "include"
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        return data.user;
+      }
+    }
+  } catch (e) {
+    console.debug("Auth session check:", e);
+  }
+  return getUser();
+};
 
 
 // ======================================================
@@ -124,148 +167,125 @@ const getToken = () =>
 // ======================================================
 
 const getCart = () => {
-
   try {
-
     return JSON.parse(
       localStorage.getItem("s369_cart") || "[]"
     );
-
   } catch (error) {
-
     console.error("Cart storage error:", error);
-
     return [];
-
   }
-
 };
 
-
 const setCart = (cart) => {
-
   localStorage.setItem(
     "s369_cart",
     JSON.stringify(cart)
   );
-
   window.dispatchEvent(
     new Event("s369-cart")
   );
-
 };
 
 
 // ======================================================
-// LOAD CART FROM MONGODB
+// LOAD CART FROM MONGODB / DB
 // ======================================================
 
 async function loadCartFromServer() {
-
   const token = getToken();
 
-  if (!token) {
-    return [];
-  }
-
   try {
+    const headers = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
     const response = await fetch(
-      `${API_BASE}/api/cart`,
+      `${window.API_BASE}/api/cart`,
       {
         method: "GET",
-
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers,
+        credentials: "include"
       }
     );
-
 
     if (response.status === 401) {
-
-      console.warn(
-        "Cart authentication expired."
-      );
-
-      return [];
-
+      return getCart();
     }
-
 
     if (!response.ok) {
-
-      throw new Error(
-        `Cart request failed: ${response.status}`
-      );
-
+      throw new Error(`Cart request failed: ${response.status}`);
     }
 
-
     const data = await response.json();
-
-
-    const cart = (data.items || []).map(
-      (item) => ({
-        id: item.productId,
-        size: item.size,
-        qty: item.quantity
-      })
-    );
-
+    const cart = (data.items || []).map((item) => ({
+      id: item.productId,
+      size: item.size,
+      qty: item.quantity
+    }));
 
     setCart(cart);
-
-
     return cart;
-
   } catch (error) {
-
-    console.error(
-      "Failed to load cart from MongoDB:",
-      error
-    );
-
+    console.warn("Using local cart cache:", error.message);
     return getCart();
-
   }
-
 }
 
 
 // ======================================================
-// ADD ITEM TO MONGODB CART
+// SYNC CART WITH SERVER (MERGE GUEST + USER CART)
 // ======================================================
 
-async function addCartToServer(
-  id,
-  size,
-  qty
-) {
-
+async function syncCartWithServer() {
   const token = getToken();
-
-  if (!token) {
-
-    window.location.href = "login.html";
-
-    return false;
-
-  }
-
+  if (!token) return getCart();
 
   try {
+    const local = getCart();
+    const response = await fetch(`${window.API_BASE}/api/cart/sync`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      credentials: "include",
+      body: JSON.stringify({ items: local })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const cart = (data.items || []).map((item) => ({
+        id: item.productId,
+        size: item.size,
+        qty: item.quantity
+      }));
+      setCart(cart);
+      return cart;
+    }
+  } catch (e) {
+    console.warn("Cart sync warning:", e);
+  }
+  return loadCartFromServer();
+}
+
+
+// ======================================================
+// ADD ITEM TO MONGODB / DB CART
+// ======================================================
+
+async function addCartToServer(id, size, qty) {
+  const token = getToken();
+
+  try {
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
     const response = await fetch(
-      `${API_BASE}/api/cart`,
+      `${window.API_BASE}/api/cart`,
       {
         method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-
+        headers,
+        credentials: "include",
         body: JSON.stringify({
           productId: id,
           size: size,
@@ -274,82 +294,65 @@ async function addCartToServer(
       }
     );
 
+    if (response.status === 401) {
+      // User is guest - store in local cart
+      let localCart = getCart();
+      const existing = localCart.find(i => i.id === id && i.size === size);
+      if (existing) {
+        existing.qty = Number(existing.qty || 1) + Number(qty);
+      } else {
+        localCart.push({ id, size, qty: Number(qty) });
+      }
+      setCart(localCart);
+      return true;
+    }
 
     const data = await response.json();
 
-
     if (!response.ok) {
-
-      throw new Error(
-        data.message ||
-        "Could not add item to cart"
-      );
-
+      throw new Error(data.message || "Could not add item to cart");
     }
 
-
-    const cart = (data.items || []).map(
-      (item) => ({
-        id: item.productId,
-        size: item.size,
-        qty: item.quantity
-      })
-    );
-
+    const cart = (data.items || []).map((item) => ({
+      id: item.productId,
+      size: item.size,
+      qty: item.quantity
+    }));
 
     setCart(cart);
-
-
     return true;
-
   } catch (error) {
-
-    console.error(
-      "Add cart API error:",
-      error
-    );
-
-    toast(
-      error.message ||
-      "Could not add item to cart."
-    );
-
-    return false;
-
+    console.error("Add cart API error, saving locally:", error);
+    let localCart = getCart();
+    const existing = localCart.find(i => i.id === id && i.size === size);
+    if (existing) {
+      existing.qty = Number(existing.qty || 1) + Number(qty);
+    } else {
+      localCart.push({ id, size, qty: Number(qty) });
+    }
+    setCart(localCart);
+    return true;
   }
-
 }
 
 
 // ======================================================
-// UPDATE ITEM IN MONGODB CART
+// UPDATE ITEM IN MONGODB / DB CART
 // ======================================================
 
-async function updateCartItemOnServer(
-  id,
-  size,
-  qty
-) {
-
+async function updateCartItemOnServer(id, size, qty) {
   const token = getToken();
 
-  if (!token) {
-    return false;
-  }
-
-
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
     const response = await fetch(
-      `${API_BASE}/api/cart`,
+      `${window.API_BASE}/api/cart`,
       {
         method: "PUT",
-
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-
+        headers,
+        credentials: "include",
         body: JSON.stringify({
           productId: id,
           size: size,
@@ -358,81 +361,55 @@ async function updateCartItemOnServer(
       }
     );
 
+    if (response.status === 401) {
+      let localCart = getCart();
+      const item = localCart.find(i => i.id === id && i.size === size);
+      if (item) item.qty = qty;
+      setCart(localCart);
+      return true;
+    }
 
     const data = await response.json();
 
-
     if (!response.ok) {
-
-      throw new Error(
-        data.message ||
-        "Could not update cart"
-      );
-
+      throw new Error(data.message || "Could not update cart");
     }
 
-
-    const cart = (data.items || []).map(
-      (item) => ({
-        id: item.productId,
-        size: item.size,
-        qty: item.quantity
-      })
-    );
-
+    const cart = (data.items || []).map((item) => ({
+      id: item.productId,
+      size: item.size,
+      qty: item.quantity
+    }));
 
     setCart(cart);
-
-
     return true;
-
   } catch (error) {
-
-    console.error(
-      "Update cart API error:",
-      error
-    );
-
-    toast(
-      error.message ||
-      "Could not update cart."
-    );
-
-    return false;
-
+    let localCart = getCart();
+    const item = localCart.find(i => i.id === id && i.size === size);
+    if (item) item.qty = qty;
+    setCart(localCart);
+    return true;
   }
-
 }
 
 
 // ======================================================
-// REMOVE ITEM FROM MONGODB CART
+// REMOVE ITEM FROM MONGODB / DB CART
 // ======================================================
 
-async function removeCartItemFromServer(
-  id,
-  size
-) {
-
+async function removeCartItemFromServer(id, size) {
   const token = getToken();
 
-  if (!token) {
-    return false;
-  }
-
-
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
     const response = await fetch(
-      `${API_BASE}/api/cart`,
+      `${window.API_BASE}/api/cart`,
       {
         method: "DELETE",
-
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-
+        headers,
+        credentials: "include",
         body: JSON.stringify({
           productId: id,
           size: size
@@ -440,50 +417,31 @@ async function removeCartItemFromServer(
       }
     );
 
+    if (response.status === 401) {
+      let localCart = getCart().filter(i => !(i.id === id && i.size === size));
+      setCart(localCart);
+      return true;
+    }
 
     const data = await response.json();
 
-
     if (!response.ok) {
-
-      throw new Error(
-        data.message ||
-        "Could not remove item"
-      );
-
+      throw new Error(data.message || "Could not remove item");
     }
 
-
-    const cart = (data.items || []).map(
-      (item) => ({
-        id: item.productId,
-        size: item.size,
-        qty: item.quantity
-      })
-    );
-
+    const cart = (data.items || []).map((item) => ({
+      id: item.productId,
+      size: item.size,
+      qty: item.quantity
+    }));
 
     setCart(cart);
-
-
     return true;
-
   } catch (error) {
-
-    console.error(
-      "Remove cart API error:",
-      error
-    );
-
-    toast(
-      error.message ||
-      "Could not remove item."
-    );
-
-    return false;
-
+    let localCart = getCart().filter(i => !(i.id === id && i.size === size));
+    setCart(localCart);
+    return true;
   }
-
 }
 
 
@@ -491,48 +449,13 @@ async function removeCartItemFromServer(
 // ADD TO CART
 // ======================================================
 
-async function addToCart(
-  id,
-  size = "30ml",
-  qty = 1
-) {
-
-  const token = getToken();
-
-
-  // User must login before adding to cart
-  if (!token) {
-
-    toast(
-      "Please login to add items to your bag."
-    );
-
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 700);
-
-    return;
-
-  }
-
-
-  const success = await addCartToServer(
-    id,
-    size,
-    qty
-  );
-
+async function addToCart(id, size = "30ml", qty = 1) {
+  const success = await addCartToServer(id, size, qty);
 
   if (success) {
-
     const product = productById(id);
-
-    toast(
-      `${product?.name || "Product"} · ${size} added to bag`
-    );
-
+    toast(`${product?.name || "Product"} · ${size} added to bag`);
   }
-
 }
 
 
@@ -556,58 +479,227 @@ function cartCount() {
 // ======================================================
 
 function cartSubtotal() {
-
-  return getCart().reduce(
-    (total, item) =>
-      total +
-      (SIZES[item.size]?.price || 0) *
-      Number(item.qty || 0),
-    0
-  );
-
+  return getCart().reduce((total, item) => {
+    const p = productById(item.id);
+    const price = p?.prices?.[item.size]?.price ?? p?.price ?? (SIZES[item.size]?.price || 399);
+    return total + (Number(price) * Number(item.qty || 1));
+  }, 0);
 }
 
 
 // ======================================================
-// WISHLIST
+// WISHLIST MODULE (Cache in localStorage + Sync to MongoDB Atlas)
 // ======================================================
 
-const getWishlist = () =>
-  JSON.parse(
-    localStorage.getItem("s369_wishlist") || "[]"
-  );
-
-
-const setWishlist = (w) => {
-
-  localStorage.setItem(
-    "s369_wishlist",
-    JSON.stringify(w)
-  );
-
-  window.dispatchEvent(
-    new Event("s369-wishlist")
-  );
-
+const normalizeWishlistItem = (item) => {
+  if (typeof item === "string") {
+    return {
+      productId: item,
+      notifyPriceDrop: true,
+      notifyBackInStock: true,
+      addedAt: new Date().toISOString()
+    };
+  }
+  return {
+    productId: String(item.productId || item.id || ""),
+    notifyPriceDrop: item.notifyPriceDrop !== false,
+    notifyBackInStock: item.notifyBackInStock !== false,
+    addedAt: item.addedAt || new Date().toISOString()
+  };
 };
 
+const getWishlist = () => {
+  try {
+    const raw = JSON.parse(localStorage.getItem("s369_wishlist") || "[]");
+    if (!Array.isArray(raw)) return [];
+    return raw.map(normalizeWishlistItem).filter(x => Boolean(x.productId));
+  } catch (e) {
+    return [];
+  }
+};
 
-function toggleWishlist(id) {
+const getGuestId = () => {
+  let gid = localStorage.getItem("s369_guest_id");
+  if (!gid) {
+    const match = document.cookie.match(/(?:^|;\s*)s369_guest_id=([^;]+)/);
+    if (match) gid = decodeURIComponent(match[1]);
+  }
+  if (!gid) {
+    gid = "gst_" + Math.random().toString(36).substring(2) + Date.now().toString(36);
+    localStorage.setItem("s369_guest_id", gid);
+    document.cookie = `s369_guest_id=${gid}; path=/; max-age=31536000; SameSite=Lax`;
+  }
+  return gid;
+};
 
-  let w = getWishlist();
+const getAuthHeaders = () => {
+  const headers = { "Content-Type": "application/json" };
+  const token = getToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const guestId = getGuestId();
+  if (guestId) headers["x-guest-id"] = guestId;
+  return headers;
+};
 
-  w = w.includes(id)
-    ? w.filter((x) => x !== id)
-    : [...w, id];
+const getWishlistIds = () => getWishlist().map(x => x.productId);
 
-  setWishlist(w);
+const isInWishlist = (id) => getWishlistIds().includes(String(id));
 
-  toast(
-    w.includes(id)
-      ? "Saved to wishlist"
-      : "Removed from wishlist"
-  );
+const setWishlist = (items) => {
+  const normalized = Array.isArray(items) ? items.map(normalizeWishlistItem).filter(x => Boolean(x.productId)) : [];
+  localStorage.setItem("s369_wishlist", JSON.stringify(normalized));
+  window.dispatchEvent(new CustomEvent("s369-wishlist", { detail: { items: normalized } }));
+  updateCounters();
+};
 
+async function loadWishlistFromServer() {
+  try {
+    const res = await fetch(`${window.API_BASE}/api/wishlist`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+      credentials: "include"
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.items)) {
+        if (data.guestId) localStorage.setItem("s369_guest_id", data.guestId);
+        setWishlist(data.items);
+        return data.items;
+      }
+    }
+  } catch (e) {
+    console.warn("Could not load wishlist from server:", e);
+  }
+  return getWishlist();
+}
+
+async function toggleWishlist(id, options = {}) {
+  const pId = String(id);
+  const current = getWishlist();
+  const exists = current.some(i => i.productId === pId);
+  let updated;
+  let action;
+
+  if (exists) {
+    updated = current.filter(i => i.productId !== pId);
+    action = "removed";
+  } else {
+    updated = [
+      ...current,
+      {
+        productId: pId,
+        notifyPriceDrop: options.notifyPriceDrop !== false,
+        notifyBackInStock: options.notifyBackInStock !== false,
+        addedAt: new Date().toISOString()
+      }
+    ];
+    action = "added";
+  }
+
+  setWishlist(updated);
+
+  const product = productById(pId);
+  const pName = product ? product.name : "Fragrance";
+
+  toast(action === "added" ? `${pName} added to wishlist ❤️` : `${pName} removed from wishlist`);
+
+  // Persist to MongoDB Atlas Cloud (both guest and authenticated)
+  try {
+    const res = await fetch(`${window.API_BASE}/api/wishlist`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      body: JSON.stringify({
+        productId: pId,
+        notifyPriceDrop: options.notifyPriceDrop !== false,
+        notifyBackInStock: options.notifyBackInStock !== false
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.items)) {
+        if (data.guestId) localStorage.setItem("s369_guest_id", data.guestId);
+        setWishlist(data.items);
+      }
+    }
+  } catch (err) {
+    console.warn("Could not sync wishlist toggle to DB:", err);
+  }
+
+  return action === "added";
+}
+
+async function removeFromWishlist(id) {
+  const pId = String(id);
+  const current = getWishlist();
+  const updated = current.filter(i => i.productId !== pId);
+  setWishlist(updated);
+
+  const product = productById(pId);
+  const pName = product ? product.name : "Fragrance";
+  toast(`${pName} removed from wishlist`);
+
+  try {
+    const res = await fetch(`${window.API_BASE}/api/wishlist/${pId}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+      credentials: "include"
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.items)) {
+        if (data.guestId) localStorage.setItem("s369_guest_id", data.guestId);
+        setWishlist(data.items);
+      }
+    }
+  } catch (err) {
+    console.warn("Could not delete from DB wishlist:", err);
+  }
+}
+
+async function updateWishlistNotification(id, { notifyPriceDrop, notifyBackInStock }) {
+  const pId = String(id);
+  const current = getWishlist();
+  const item = current.find(i => i.productId === pId);
+  if (!item) return;
+
+  if (typeof notifyPriceDrop === "boolean") item.notifyPriceDrop = notifyPriceDrop;
+  if (typeof notifyBackInStock === "boolean") item.notifyBackInStock = notifyBackInStock;
+
+  setWishlist(current);
+
+  try {
+    await fetch(`${window.API_BASE}/api/wishlist/${pId}/notifications`, {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      body: JSON.stringify({ notifyPriceDrop, notifyBackInStock })
+    });
+  } catch (err) {
+    console.warn("Could not update notifications in DB:", err);
+  }
+}
+
+async function syncWishlistWithServer() {
+  try {
+    const local = getWishlist();
+    const res = await fetch(`${window.API_BASE}/api/wishlist/sync`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      body: JSON.stringify({ items: local })
+    });
+
+    const data = await res.json();
+    if (data.ok && Array.isArray(data.items)) {
+      if (data.guestId) localStorage.setItem("s369_guest_id", data.guestId);
+      setWishlist(data.items);
+      return data.items;
+    }
+  } catch (err) {
+    console.warn("Wishlist sync error:", err);
+  }
+  return getWishlist();
 }
 
 
@@ -651,8 +743,7 @@ function toast(msg) {
 
 function productCard(p) {
 
-  const wish =
-    getWishlist().includes(p.id);
+  const wish = isInWishlist(p.id);
 
   return `
     <article
@@ -675,12 +766,20 @@ function productCard(p) {
           EAU DE PARFUM
         </span>
 
+        <div style="position:absolute; bottom:10px; left:10px; display:flex; gap:6px; z-index:2;">
+          <span style="background:rgba(93,31,45,0.88); color:#fff; font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:12px; letter-spacing:0.4px;">${p.gender || "Unisex"}</span>
+          <span style="background:rgba(255,255,255,0.95); color:#111; font-size:11px; font-weight:700; padding:3px 8px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.12);">★ ${p.rating || "4.9"}</span>
+        </div>
+
         <button
           class="wishlist-btn ${wish ? "active" : ""}"
           data-wish="${p.id}"
-          aria-label="Save ${p.name} to wishlist"
+          aria-label="${wish ? `Remove ${p.name} from wishlist` : `Save ${p.name} to wishlist`}"
+          title="${wish ? "Remove from wishlist" : "Add to wishlist"}"
         >
-          ♡
+          <svg class="heart-icon" width="18" height="18" viewBox="0 0 24 24" fill="${wish ? "#ffffff" : "none"}" stroke="${wish ? "#ffffff" : "#5d1f2d"}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
         </button>
 
       </div>
@@ -697,7 +796,7 @@ function productCard(p) {
             </a>
 
             <div class="tagline">
-              ${p.tagline}
+              ${p.scentFamily ? `<span style="color:#5d1f2d; font-weight:600;">${p.scentFamily}</span> · ` : ""}${p.tagline}
             </div>
 
           </div>
@@ -706,11 +805,11 @@ function productCard(p) {
           <div class="price-block">
 
             <strong data-price>
-              ${fmt(SIZES["30ml"].price)}
+              ${fmt(p.prices?.["30ml"]?.price || p.price || SIZES["30ml"].price)}
             </strong>
 
             <del data-mrp>
-              ${fmt(SIZES["30ml"].mrp)}
+              ${fmt(p.prices?.["30ml"]?.mrp || (p.price ? p.price * 2 : SIZES["30ml"].mrp))}
             </del>
 
           </div>
@@ -758,19 +857,20 @@ function wireProductCards(
   scope
     .querySelectorAll("[data-wish]")
     .forEach((button) => {
-
-      button.onclick = () => {
-
-        toggleWishlist(
-          button.dataset.wish
-        );
-
-        button.classList.toggle(
-          "active"
-        );
-
+      button.onclick = async (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        const pId = button.dataset.wish;
+        const isAdded = await toggleWishlist(pId);
+        button.classList.toggle("active", isAdded);
+        button.setAttribute("title", isAdded ? "Remove from wishlist" : "Add to wishlist");
+        button.setAttribute("aria-label", isAdded ? `Remove from wishlist` : `Save to wishlist`);
+        button.innerHTML = isAdded
+          ? `<svg class="heart-icon" width="18" height="18" viewBox="0 0 24 24" fill="#ffffff" stroke="#ffffff" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`
+          : `<svg class="heart-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5d1f2d" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
       };
-
     });
 
 
@@ -788,16 +888,22 @@ function wireProductCards(
 
         select.onchange = () => {
 
+          const addBtn = card.querySelector("[data-add]");
+          const pId = addBtn?.dataset?.add;
+          const prod = productById(pId);
+          const sizeVal = select.value;
+          const sizePricing = prod?.prices?.[sizeVal] || SIZES[sizeVal] || { price: 399, mrp: 799 };
+
           card.querySelector(
             "[data-price]"
           ).textContent =
-            fmt(SIZES[select.value].price);
+            fmt(sizePricing.price);
 
 
           card.querySelector(
             "[data-mrp]"
           ).textContent =
-            fmt(SIZES[select.value].mrp);
+            fmt(sizePricing.mrp);
 
         };
 
@@ -1142,7 +1248,7 @@ function footer() {
         </span>
 
         <span>
-          s369.in · Eau de Parfum
+          s369.in · Eau de Parfum · <a href="admin.html" style="color:inherit; text-decoration:none; opacity:0.85;">Admin Portal</a>
         </span>
 
       </div>
@@ -1238,6 +1344,26 @@ function globalChrome(active = "") {
 
   renderMiniCart();
 
+  // Check auth session from cookie/token
+  checkAuthSession().then((user) => {
+    if (user) {
+      document.querySelectorAll(".main-nav a[href='login.html']").forEach(a => {
+        a.href = "account.html";
+        a.textContent = user.name ? `Account (${user.name.split(" ")[0]})` : "Account";
+      });
+      document.querySelectorAll(".mobile-menu a[href='login.html']").forEach(a => {
+        a.href = "account.html";
+        a.textContent = user.name ? `Account (${user.name.split(" ")[0]})` : "Account";
+      });
+    }
+  });
+
+  // Fetch fresh products and pricing from MongoDB Atlas DB
+  loadProductsFromApi()
+    .then(() => {
+      updateCounters();
+      renderMiniCart();
+    });
 
   // Load this user's MongoDB cart
   loadCartFromServer()
@@ -1252,6 +1378,27 @@ function globalChrome(active = "") {
       );
 
     });
+
+  // Load and sync this user's MongoDB wishlist
+  syncWishlistWithServer()
+    .then(() => {
+      updateCounters();
+      window.dispatchEvent(new Event("s369-wishlist"));
+    });
+
+  // Sticky navigation bar scroll state
+  const headerEl = document.querySelector(".site-header");
+  if (headerEl) {
+    const handleScroll = () => {
+      if (window.scrollY > 15) {
+        headerEl.classList.add("scrolled");
+      } else {
+        headerEl.classList.remove("scrolled");
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+  }
 
 }
 
@@ -1650,7 +1797,7 @@ function renderMiniCart() {
 
             <strong>
               ${fmt(
-                SIZES[x.size].price *
+                (p.prices?.[x.size]?.price ?? p.price ?? SIZES[x.size]?.price ?? 399) *
                 x.qty
               )}
             </strong>
@@ -1732,11 +1879,12 @@ function whatsappOrder() {
 
     if (!p) return;
 
+    const unitPrice = p.prices?.[x.size]?.price ?? p.price ?? SIZES[x.size]?.price ?? 399;
 
     lines.push(
       `• ${p.name} — ${x.size} × ${x.qty} — ${
         fmt(
-          SIZES[x.size].price *
+          unitPrice *
           x.qty
         )
       }`
@@ -1859,10 +2007,15 @@ function renderShopGrid(
 
 async function loadProductsFromApi() {
   try {
-    const res = await fetch(`${API_BASE}/api/products`);
+    const res = await fetch(`${window.API_BASE}/api/products?_t=${Date.now()}`, {
+      cache: "no-store"
+    });
     const data = await res.json();
     if (data.ok && Array.isArray(data.products) && data.products.length > 0) {
       window.S369_PRODUCTS = data.products;
+      if (window.S369) {
+        window.S369.PRODUCTS = data.products;
+      }
       return data.products;
     }
   } catch (e) {
@@ -1902,6 +2055,16 @@ window.S369 = {
 
   loadCartFromServer,
 
+  syncCartWithServer,
+
+  getToken,
+
+  getUser,
+
+  getCookie,
+
+  checkAuthSession,
+
   addToCart,
 
   addCartToServer,
@@ -1916,6 +2079,10 @@ window.S369 = {
 
   getWishlist,
 
+  getWishlistIds,
+
+  isInWishlist,
+
   setWishlist,
 
   cartCount,
@@ -1923,6 +2090,12 @@ window.S369 = {
   cartSubtotal,
 
   toggleWishlist,
+
+  removeFromWishlist,
+
+  updateWishlistNotification,
+
+  syncWishlistWithServer,
 
   productCard,
 
@@ -1941,6 +2114,10 @@ window.S369 = {
   productImageSrc,
 
   PRODUCT_DRIVE_IMAGES,
+
+  getGuestId,
+
+  loadWishlistFromServer,
 
   driveThumb
 

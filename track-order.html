@@ -38,8 +38,16 @@
     <script>
       S369.globalChrome('');
       const qs = new URLSearchParams(location.search);
-      document.getElementById("orderId").value = qs.get("order") || sessionStorage.getItem("s369_last_order") || "";
-      document.getElementById("orderPhone").value = localStorage.getItem("s369_last_phone") || "";
+      const prefilledOrder = qs.get("order") || sessionStorage.getItem("s369_last_order") || "";
+      const prefilledPhone = localStorage.getItem("s369_last_phone") || "";
+      document.getElementById("orderId").value = prefilledOrder;
+      document.getElementById("orderPhone").value = prefilledPhone;
+
+      if (prefilledOrder) {
+        setTimeout(() => {
+          document.getElementById("trackForm").dispatchEvent(new Event("submit"));
+        }, 150);
+      }
 
       document.getElementById("trackForm").onsubmit = async (e) => {
         e.preventDefault();

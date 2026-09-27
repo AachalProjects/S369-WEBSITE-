@@ -1,0 +1,820 @@
+{
+  "users": [
+    {
+      "_id": "admin_1001",
+      "name": "S369 Administrator",
+      "email": "admin@s369.in",
+      "password": "$2b$10$jfcm7kSvEX0HFrBqEw6KDegh5wrG6DePn.VJBSRfcqDSykkCh4mkW",
+      "role": "admin",
+      "createdAt": "2026-09-25T07:48:25.028Z"
+    },
+    {
+      "_id": "usr_1790322539635_601",
+      "name": "Test Customer",
+      "email": "testuser_1790322539461@s369.in",
+      "password": "$2b$10$2wFphYm2lzKX4q0TJMz9JOJEEpAp1LKs/eId7PfVMAnIQ02T1DyYy",
+      "role": "customer",
+      "createdAt": "2026-09-25T07:48:59.635Z"
+    },
+    {
+      "_id": "usr_1790322593205_455",
+      "name": "Test Customer",
+      "email": "testuser_1790322593036@s369.in",
+      "password": "$2b$10$cSHBwvsT5KY3C2rIQrtC.ux.EFdEak79WWXLaqko4efEosCEoo5c6",
+      "role": "customer",
+      "createdAt": "2026-09-25T07:49:53.205Z"
+    },
+    {
+      "_id": "usr_1790322614732_961",
+      "name": "Test Customer",
+      "email": "testuser_1790322614577@s369.in",
+      "password": "$2b$10$Lm9HXhTTtBuQe6eHAa5mweLrXFDLiihIpI03WuvI1BVv79Ay39g8G",
+      "role": "customer",
+      "createdAt": "2026-09-25T07:50:14.732Z"
+    },
+    {
+      "_id": "usr_1790324144023_58",
+      "name": "Rohan Sharma",
+      "email": "cust_1790324143514@s369.in",
+      "password": "$2b$10$0dHDmDrDVAOh.XEKx7//AOHvLAwrn1eQUtRJad66dQXYCk47uwsKW",
+      "role": "customer",
+      "createdAt": "2026-09-25T08:15:44.023Z"
+    },
+    {
+      "_id": "usr_1790364348320_248",
+      "name": "Aachal Sharma",
+      "email": "aachal.test@s369.in",
+      "password": "$2b$10$siMuZEwI5avGLjs9Q11D..JNlijSxgGCC9J0B/zFksyrBND7thtXO",
+      "role": "customer",
+      "createdAt": "2026-09-25T19:25:48.320Z"
+    },
+    {
+      "_id": "usr_1790364875057_789",
+      "name": "Rohit Verma",
+      "email": "client_639259814746531520@test.com",
+      "password": "$2b$10$NHutKAoLkgs0Z0lnOQFeM.BB2OF7MHSrWK.An13xkrCh0L2LBZ90i",
+      "role": "customer",
+      "createdAt": "2026-09-25T19:34:35.057Z"
+    },
+    {
+      "_id": "usr_1790365593409_391",
+      "name": "Fresh Customer",
+      "email": "fresh_639259821928208629@gmail.com",
+      "password": "$2b$10$Jv6FP5Wu1NDaYiMvWMGF3..eD/M66wI0YnLrozlntZxIeQu4WmFKK",
+      "role": "customer",
+      "createdAt": "2026-09-25T19:46:33.409Z"
+    },
+    {
+      "_id": "usr_1790366184529_558",
+      "name": "Test Tester",
+      "email": "testuser_unique_123@example.com",
+      "password": "$2b$10$9tetz.sw/4NNZzzR1HOwa.DeSV884thDTvUUlpOscxujmtymC0EIi",
+      "role": "customer",
+      "createdAt": "2026-09-25T19:56:24.529Z"
+    }
+  ],
+  "carts": [
+    {
+      "userId": "usr_1790322539635_601",
+      "items": [
+        {
+          "productId": "alpha-9",
+          "size": "50ml",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "userId": "usr_1790322593205_455",
+      "items": [
+        {
+          "productId": "alpha-9",
+          "size": "50ml",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "userId": "usr_1790322614732_961",
+      "items": []
+    },
+    {
+      "userId": "6ab4f376b82e6d86d4938c74",
+      "items": [
+        {
+          "productId": "alpha-9",
+          "size": "30ml",
+          "quantity": 1
+        },
+        {
+          "productId": "cool-tides",
+          "size": "30ml",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "userId": "usr_1790324144023_58",
+      "items": []
+    },
+    {
+      "userId": "admin_1001",
+      "items": [
+        {
+          "productId": "alpha-9",
+          "size": "30ml",
+          "quantity": 1
+        },
+        {
+          "productId": "cool-tides",
+          "size": "30ml",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "userId": "usr_1790364348320_248",
+      "items": []
+    }
+  ],
+  "orders": [
+    {
+      "_id": "ord_mongo_1790322541095",
+      "orderId": "S369-158897",
+      "userId": "usr_1790322539635_601",
+      "customer": {
+        "name": "John Doe",
+        "email": "testuser_1790322539461@s369.in",
+        "phone": "9876543210",
+        "address": "123 S369 Avenue, Luxury Street",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "pin": "400001",
+        "notes": "Please deliver carefully"
+      },
+      "items": [
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "50ml",
+          "price": 899,
+          "quantity": 3,
+          "lineTotal": 2697
+        }
+      ],
+      "subtotal": 2697,
+      "shippingFee": 0,
+      "totalAmount": 2697,
+      "paymentMethod": "online",
+      "paymentStatus": "pending",
+      "orderStatus": "placed",
+      "razorpayOrderId": "order_mock_1790322539841",
+      "createdAt": "2026-09-25T07:49:01.095Z",
+      "updatedAt": "2026-09-25T07:49:01.095Z"
+    },
+    {
+      "_id": "ord_mongo_1790322593492",
+      "orderId": "S369-730260",
+      "userId": "usr_1790322593205_455",
+      "customer": {
+        "name": "John Doe",
+        "email": "testuser_1790322593036@s369.in",
+        "phone": "9876543210",
+        "address": "123 S369 Avenue, Luxury Street",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "pin": "400001",
+        "notes": "Please deliver carefully"
+      },
+      "items": [
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "50ml",
+          "price": 899,
+          "quantity": 3,
+          "lineTotal": 2697
+        }
+      ],
+      "subtotal": 2697,
+      "shippingFee": 0,
+      "totalAmount": 2697,
+      "paymentMethod": "online",
+      "paymentStatus": "pending",
+      "orderStatus": "placed",
+      "razorpayOrderId": "order_mock_1790322593389",
+      "createdAt": "2026-09-25T07:49:53.492Z",
+      "updatedAt": "2026-09-25T07:49:53.492Z"
+    },
+    {
+      "_id": "ord_mongo_1790322614950",
+      "orderId": "S369-196585",
+      "userId": "usr_1790322614732_961",
+      "customer": {
+        "name": "John Doe",
+        "email": "testuser_1790322614577@s369.in",
+        "phone": "9876543210",
+        "address": "123 S369 Avenue, Luxury Street",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "pin": "400001",
+        "notes": "Please deliver carefully"
+      },
+      "items": [
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "50ml",
+          "price": 899,
+          "quantity": 3,
+          "lineTotal": 2697
+        }
+      ],
+      "subtotal": 2697,
+      "shippingFee": 0,
+      "totalAmount": 2697,
+      "paymentMethod": "online",
+      "paymentStatus": "paid",
+      "orderStatus": "processing",
+      "razorpayOrderId": "order_mock_1790322614909",
+      "createdAt": "2026-09-25T07:50:14.950Z",
+      "updatedAt": "2026-09-25T07:50:14.962Z",
+      "razorpayPaymentId": "pay_test_9999",
+      "razorpaySignature": "simulated_signature"
+    },
+    {
+      "_id": "ord_mongo_1790323156795",
+      "orderId": "S369-579431",
+      "userId": "6ab4f376b82e6d86d4938c74",
+      "customer": {
+        "name": "Aachal Yadav",
+        "email": "aacy27@gmail.com",
+        "phone": "+919867669961",
+        "address": "01/203, JEEVAN LIFESTYLE",
+        "city": "Yadav Nagar",
+        "state": "Maharashtra",
+        "pin": "421503",
+        "notes": ""
+      },
+      "items": [
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "30ml",
+          "price": 399,
+          "quantity": 2,
+          "lineTotal": 798
+        },
+        {
+          "productId": "cool-tides",
+          "name": "Cool Tides",
+          "size": "30ml",
+          "price": 399,
+          "quantity": 2,
+          "lineTotal": 798
+        }
+      ],
+      "subtotal": 1596,
+      "shippingFee": 0,
+      "totalAmount": 1596,
+      "paymentMethod": "online",
+      "paymentStatus": "paid",
+      "orderStatus": "processing",
+      "razorpayOrderId": "order_mock_1790323156621",
+      "createdAt": "2026-09-25T07:59:16.795Z",
+      "updatedAt": "2026-09-25T07:59:16.812Z",
+      "razorpayPaymentId": "pay_sim_1790323156801",
+      "razorpaySignature": "simulated_signature"
+    },
+    {
+      "_id": "ord_mongo_1790324144625",
+      "orderId": "S369-381415",
+      "userId": "usr_1790324144023_58",
+      "customer": {
+        "name": "Rohan Sharma",
+        "email": "cust_1790324143514@s369.in",
+        "phone": "9876501234",
+        "address": "Building 42, Marine Drive",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "pin": "400020",
+        "notes": "Ring the bell upon arrival"
+      },
+      "items": [
+        {
+          "productId": "wild-crest",
+          "name": "Wild Crest",
+          "size": "50ml",
+          "price": 899,
+          "quantity": 1,
+          "lineTotal": 899
+        },
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "100ml",
+          "price": 1499,
+          "quantity": 1,
+          "lineTotal": 1499
+        }
+      ],
+      "subtotal": 2398,
+      "shippingFee": 0,
+      "totalAmount": 2398,
+      "paymentMethod": "cod",
+      "paymentStatus": "pending",
+      "orderStatus": "placed",
+      "razorpayOrderId": "order_mock_1790324144431",
+      "createdAt": "2026-09-25T08:15:44.625Z",
+      "updatedAt": "2026-09-25T08:15:44.626Z"
+    },
+    {
+      "_id": "ord_mongo_1790324144701",
+      "orderId": "S369-964421",
+      "userId": "usr_1790324144023_58",
+      "customer": {
+        "name": "Rohan Sharma",
+        "email": "cust_1790324143514@s369.in",
+        "phone": "9876501234",
+        "address": "Building 42, Marine Drive",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "pin": "400020",
+        "notes": ""
+      },
+      "items": [
+        {
+          "productId": "wild-crest",
+          "name": "Wild Crest",
+          "size": "50ml",
+          "price": 899,
+          "quantity": 1,
+          "lineTotal": 899
+        },
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "100ml",
+          "price": 1499,
+          "quantity": 1,
+          "lineTotal": 1499
+        },
+        {
+          "productId": "crimson-musk",
+          "name": "Crimson Musk",
+          "size": "30ml",
+          "price": 399,
+          "quantity": 2,
+          "lineTotal": 798
+        }
+      ],
+      "subtotal": 3196,
+      "shippingFee": 0,
+      "totalAmount": 3196,
+      "paymentMethod": "online",
+      "paymentStatus": "paid",
+      "orderStatus": "delivered",
+      "razorpayOrderId": "order_mock_1790324144670",
+      "createdAt": "2026-09-25T08:15:44.701Z",
+      "updatedAt": "2026-09-25T08:38:13.541Z",
+      "razorpayPaymentId": "pay_live_test_1001",
+      "razorpaySignature": "simulated_signature"
+    },
+    {
+      "_id": "ord_mongo_1790326305892",
+      "orderId": "S369-394075",
+      "userId": "admin_1001",
+      "customer": {
+        "name": "Aachal Yadav",
+        "email": "aacy27@gmail.com",
+        "phone": "+919867669961",
+        "address": "01/203, JEEVAN LIFESTYLE",
+        "city": "Yadav Nagar",
+        "state": "Maharashtra",
+        "pin": "421503",
+        "notes": ""
+      },
+      "items": [
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "30ml",
+          "price": 399,
+          "quantity": 1,
+          "lineTotal": 399
+        },
+        {
+          "productId": "cool-tides",
+          "name": "Cool Tides",
+          "size": "30ml",
+          "price": 399,
+          "quantity": 1,
+          "lineTotal": 399
+        }
+      ],
+      "subtotal": 798,
+      "shippingFee": 0,
+      "totalAmount": 798,
+      "paymentMethod": "online",
+      "paymentStatus": "paid",
+      "orderStatus": "processing",
+      "razorpayOrderId": "order_mock_1790326305862",
+      "createdAt": "2026-09-25T08:51:45.892Z",
+      "updatedAt": "2026-09-25T08:51:45.898Z",
+      "razorpayPaymentId": "pay_sim_1790326305895",
+      "razorpaySignature": "simulated_signature"
+    },
+    {
+      "_id": "ord_mongo_1790360524133",
+      "orderId": "S369-759168",
+      "userId": "admin_1001",
+      "customer": {
+        "name": "Aachal Yadav",
+        "email": "aacy27@gmail.com",
+        "phone": "+919867669961",
+        "address": "01/203, JEEVAN LIFESTYLE",
+        "city": "Yadav Nagar",
+        "state": "Maharashtra",
+        "pin": "421503",
+        "notes": ""
+      },
+      "items": [
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "30ml",
+          "price": 399,
+          "quantity": 1,
+          "lineTotal": 399
+        },
+        {
+          "productId": "cool-tides",
+          "name": "Cool Tides",
+          "size": "30ml",
+          "price": 399,
+          "quantity": 1,
+          "lineTotal": 399
+        }
+      ],
+      "subtotal": 798,
+      "shippingFee": 0,
+      "totalAmount": 798,
+      "paymentMethod": "online",
+      "paymentStatus": "pending",
+      "orderStatus": "placed",
+      "razorpayOrderId": "order_TgMoGOrrE5mlLs",
+      "createdAt": "2026-09-25T18:22:04.133Z",
+      "updatedAt": "2026-09-25T18:22:04.133Z"
+    },
+    {
+      "_id": "ord_mongo_1790360534640",
+      "orderId": "S369-321125",
+      "userId": "admin_1001",
+      "customer": {
+        "name": "Aachal Yadav",
+        "email": "aacy27@gmail.com",
+        "phone": "+919867669961",
+        "address": "01/203, JEEVAN LIFESTYLE",
+        "city": "Yadav Nagar",
+        "state": "Maharashtra",
+        "pin": "421503",
+        "notes": ""
+      },
+      "items": [
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "30ml",
+          "price": 399,
+          "quantity": 1,
+          "lineTotal": 399
+        },
+        {
+          "productId": "cool-tides",
+          "name": "Cool Tides",
+          "size": "30ml",
+          "price": 399,
+          "quantity": 1,
+          "lineTotal": 399
+        }
+      ],
+      "subtotal": 798,
+      "shippingFee": 0,
+      "totalAmount": 798,
+      "paymentMethod": "online",
+      "paymentStatus": "pending",
+      "orderStatus": "placed",
+      "razorpayOrderId": "order_TgMoRsc7dBMfjc",
+      "createdAt": "2026-09-25T18:22:14.640Z",
+      "updatedAt": "2026-09-25T18:22:14.640Z"
+    },
+    {
+      "_id": "ord_mongo_1790364525376",
+      "orderId": "S369-989415",
+      "userId": "usr_1790364348320_248",
+      "customer": {
+        "name": "Aachal Sharma",
+        "email": "aachal.test@s369.in",
+        "phone": "9876543210",
+        "address": "123 Marine Drive",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "pin": "400020",
+        "notes": "Deliver after 5 PM"
+      },
+      "items": [
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "50ml",
+          "price": 899,
+          "quantity": 2,
+          "lineTotal": 1798
+        }
+      ],
+      "subtotal": 1798,
+      "discountAmount": 180,
+      "couponCode": "WELCOME10",
+      "shippingFee": 0,
+      "totalAmount": 1618,
+      "paymentMethod": "online",
+      "paymentStatus": "pending",
+      "orderStatus": "placed",
+      "razorpayOrderId": "order_TgNwhwR0qM2opJ",
+      "createdAt": "2026-09-25T19:28:45.377Z",
+      "updatedAt": "2026-09-25T19:28:45.377Z"
+    },
+    {
+      "_id": "ord_mongo_1790364549710",
+      "orderId": "S369-335621",
+      "userId": "usr_1790364348320_248",
+      "customer": {
+        "name": "Aachal Sharma",
+        "email": "aachal.test@s369.in",
+        "phone": "9876543210",
+        "address": "123 Marine Drive",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "pin": "400020",
+        "notes": ""
+      },
+      "items": [
+        {
+          "productId": "alpha-9",
+          "name": "Alpha 9",
+          "size": "50ml",
+          "price": 899,
+          "quantity": 1,
+          "lineTotal": 899
+        }
+      ],
+      "subtotal": 899,
+      "discountAmount": 0,
+      "couponCode": "",
+      "shippingFee": 0,
+      "totalAmount": 899,
+      "paymentMethod": "online",
+      "paymentStatus": "paid",
+      "orderStatus": "processing",
+      "razorpayOrderId": "order_TgNx8WQoD3TSr4",
+      "createdAt": "2026-09-25T19:29:09.710Z",
+      "updatedAt": "2026-09-25T19:29:09.734Z",
+      "razorpayPaymentId": "pay_test_12345",
+      "razorpaySignature": "simulated_signature"
+    }
+  ],
+  "products": [
+    {
+      "id": "alpha-9",
+      "name": "Alpha 9",
+      "tagline": "The Sweet Edge of Bold",
+      "image": "alpha-9.jpg",
+      "short": "Rich, warm and irresistibly smooth — sweet tobacco wrapped in creamy vanilla.",
+      "description": "Rich, warm, and irresistibly smooth Alpha 9 wraps you in a cozy embrace of sweet tobacco and creamy vanilla. It’s a modern twist on a classic favorite, designed for those who crave sophistication with a hint of daring.",
+      "notes": [
+        {
+          "label": "Top & Heart",
+          "value": "Tobacco"
+        },
+        {
+          "label": "Base",
+          "value": "Vanilla"
+        }
+      ],
+      "keywords": [
+        "tobacco",
+        "vanilla",
+        "warm",
+        "sweet"
+      ],
+      "prices": {
+        "30ml": {
+          "price": 399,
+          "mrp": 799
+        },
+        "50ml": {
+          "price": 899,
+          "mrp": 1599
+        },
+        "100ml": {
+          "price": 1499,
+          "mrp": 2999
+        }
+      }
+    },
+    {
+      "id": "cool-tides",
+      "name": "Cool Tides",
+      "tagline": "The Fresh Wave of Confidence",
+      "image": "cool-tides.jpg",
+      "short": "Blood mandarin, warm cinnamon and leather lifted by grapefruit, mint, rose and amber.",
+      "description": "Zesty blood mandarin, warm cinnamon, and bold leather make a striking first impression. Grapefruit, mint, and spicy hints meet rose, amber, and patchouli to leave a trail that’s fresh, daring, and unforgettable.",
+      "notes": [
+        {
+          "label": "Top & Heart",
+          "value": "Blood Mandarin, Cinnamon"
+        },
+        {
+          "label": "Base",
+          "value": "Amber, Patchouli"
+        }
+      ],
+      "keywords": [
+        "mandarin",
+        "cinnamon",
+        "leather",
+        "fresh"
+      ],
+      "prices": {
+        "30ml": {
+          "price": 399,
+          "mrp": 799
+        },
+        "50ml": {
+          "price": 899,
+          "mrp": 1599
+        },
+        "100ml": {
+          "price": 1499,
+          "mrp": 2999
+        }
+      }
+    },
+    {
+      "id": "wild-crest",
+      "name": "Wild Crest",
+      "tagline": "Nature's Bold Signature",
+      "image": "wild-crest.jpg",
+      "short": "Vetiver and cedarwood move into cardamom, narcissus, sandalwood and creamy vanilla.",
+      "description": "Untamed, confident, and effortlessly captivating — Wild Crest opens with fresh vetiver and crisp cedarwood, leading into a warm heart of cardamom and narcissus.",
+      "notes": [
+        {
+          "label": "Top",
+          "value": "Vetiver, Cedarwood"
+        },
+        {
+          "label": "Heart",
+          "value": "Cardamom"
+        },
+        {
+          "label": "Base",
+          "value": "Sandalwood, Vanilla"
+        }
+      ],
+      "keywords": [
+        "vetiver",
+        "cedarwood",
+        "cardamom",
+        "woody"
+      ],
+      "prices": {
+        "30ml": {
+          "price": 399,
+          "mrp": 799
+        },
+        "50ml": {
+          "price": 899,
+          "mrp": 1599
+        },
+        "100ml": {
+          "price": 1499,
+          "mrp": 2999
+        }
+      }
+    },
+    {
+      "id": "crimson-musk",
+      "name": "Crimson Musk",
+      "tagline": "The Power of Seduction",
+      "image": "crimson-musk.jpg",
+      "short": "Pear and raspberry meet oud, saffron, rose and orange blossom over patchouli and amber.",
+      "description": "Juicy pear and raspberry meet the deep richness of oud to create a striking first impression. Saffron, rose, and orange blossom unfold into a warm blend of patchouli and amber.",
+      "notes": [
+        {
+          "label": "Top",
+          "value": "Pear, Raspberry, Oud"
+        },
+        {
+          "label": "Base",
+          "value": "Patchouli, Amber"
+        }
+      ],
+      "keywords": [
+        "pear",
+        "raspberry",
+        "oud",
+        "saffron",
+        "musk"
+      ],
+      "prices": {
+        "30ml": {
+          "price": 399,
+          "mrp": 799
+        },
+        "50ml": {
+          "price": 899,
+          "mrp": 1599
+        },
+        "100ml": {
+          "price": 1499,
+          "mrp": 2999
+        }
+      }
+    },
+    {
+      "id": "night-quartz",
+      "name": "Night Quartz",
+      "tagline": "The Mystery of the Midnight",
+      "image": "night-quartz.jpg",
+      "short": "Deep saffron, rich oud and cedar wood layered with bergamot, davana, clove, rose and vetiver.",
+      "description": "Deep saffron, rich oud, and warm cedar wood create an alluring first impression, while bergamot, davana, clove, rose, vetiver, and patchouli swirl together.",
+      "notes": [
+        {
+          "label": "Top",
+          "value": "Saffron, Oud, Cedar Wood"
+        },
+        {
+          "label": "Base",
+          "value": "Vetiver, Patchouli"
+        }
+      ],
+      "keywords": [
+        "saffron",
+        "oud",
+        "cedar wood",
+        "mysterious"
+      ],
+      "prices": {
+        "30ml": {
+          "price": 399,
+          "mrp": 799
+        },
+        "50ml": {
+          "price": 899,
+          "mrp": 1599
+        },
+        "100ml": {
+          "price": 1499,
+          "mrp": 2999
+        }
+      }
+    },
+    {
+      "id": "midnight-blues",
+      "name": "Midnight Blues",
+      "tagline": "The Calm Power of the Night",
+      "image": "midnight-blues.jpg",
+      "short": "Bergamot and orange blossom blend with woods, lavender, geranium and patchouli.",
+      "description": "Fresh bergamot and orange blossom blend with deep woody notes to create a refined first impression. Lavender and geranium flow into an aromatic fougère heart.",
+      "notes": [
+        {
+          "label": "Top",
+          "value": "Bergamot, Orange Blossom"
+        },
+        {
+          "label": "Base",
+          "value": "Lavender, Patchouli"
+        }
+      ],
+      "keywords": [
+        "bergamot",
+        "orange blossom",
+        "lavender"
+      ],
+      "prices": {
+        "30ml": {
+          "price": 399,
+          "mrp": 799
+        },
+        "50ml": {
+          "price": 899,
+          "mrp": 1599
+        },
+        "100ml": {
+          "price": 1499,
+          "mrp": 2999
+        }
+      }
+    }
+  ]
+}

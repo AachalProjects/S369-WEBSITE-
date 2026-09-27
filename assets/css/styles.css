@@ -1396,6 +1396,9 @@ button {
   letter-spacing: 0.17em;
   text-transform: uppercase;
 }
+[data-header] {
+  display: contents;
+}
 .site-header {
   height: 82px;
   padding: 0 5vw;
@@ -1403,12 +1406,21 @@ button {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 40px;
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
-  z-index: 50;
-  background: rgba(255, 253, 248, 0.92);
-  backdrop-filter: blur(18px);
+  z-index: 1000;
+  background: rgba(255, 253, 248, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(75, 46, 50, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.site-header.scrolled {
+  height: 70px;
+  background: rgba(255, 253, 248, 0.98);
+  box-shadow: 0 6px 24px rgba(93, 31, 45, 0.12);
+  border-bottom-color: rgba(93, 31, 45, 0.15);
 }
 .brand img {
   width: 115px;
@@ -1698,12 +1710,36 @@ button {
   height: 38px;
   border-radius: 50%;
   border: 1px solid rgba(30, 15, 18, 0.12);
-  background: rgba(255, 255, 255, 0.86);
-  font-size: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 4;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.wishlist-btn:hover {
+  transform: scale(1.12);
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(93, 31, 45, 0.2);
 }
 .wishlist-btn.active {
   background: var(--wine);
+  border-color: var(--wine);
   color: white;
+}
+.wishlist-btn.active:hover {
+  background: #7a263a;
+  transform: scale(1.12);
+}
+.wishlist-btn svg {
+  display: block;
+  transition: transform 0.2s ease;
+}
+.wishlist-btn:active svg {
+  transform: scale(0.85);
 }
 .product-badge {
   position: absolute;
@@ -2977,3 +3013,131 @@ button {
     width: 100%;
   }
 }
+
+/* ======================================================
+   RESPONSIVE DESIGN & SMOOTH TRANSITIONS ENHANCEMENT
+   ====================================================== */
+
+/* Smooth Interactive Micro-Transitions */
+a, button, .product-card, .btn, input, select, textarea {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.product-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(93, 31, 45, 0.08);
+}
+
+.product-media img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-card:hover .product-media img {
+  transform: scale(1.04);
+}
+
+/* Toast Slide Transition */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translate(-50%, 40px);
+  background: rgba(30, 24, 24, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 99999;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.toast.show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Drawer & Overlay Smoothness */
+.mini-cart {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer-bg {
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+/* Mobile Breakpoints (< 768px and < 480px) */
+@media (max-width: 768px) {
+  .site-header {
+    padding: 12px 18px;
+  }
+  
+  .checkout-shell {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .checkout-summary {
+    position: static;
+    order: -1;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .section {
+    padding: 40px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-header .brand img {
+    height: 32px;
+  }
+
+  .hero h1 {
+    font-size: 32px;
+    line-height: 1.15;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-hero-title {
+    font-size: 26px;
+  }
+
+  .benefit-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 24px 16px;
+  }
+
+  .auth-card {
+    padding: 28px 18px;
+  }
+}
+

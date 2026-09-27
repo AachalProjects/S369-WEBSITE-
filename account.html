@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#5d1f2d" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" href="data:," />
+    <title>My Account & Orders — S369 Perfume</title>
+
+    <style>
+      .account-wrap {
+        max-width: 1040px;
+        margin: 40px auto 80px;
+        padding: 0 24px;
+        min-height: 65vh;
+      }
+
+      .account-banner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #ffffff;
+        border: 1px solid #ebe5dc;
+        border-radius: 14px;
+        padding: 28px 32px;
+        margin-bottom: 32px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      }
+
+      .account-user-meta h1 {
+        font-family: var(--serif, serif);
+        font-size: 28px;
+        color: #5d1f2d;
+        margin: 0 0 6px 0;
+        font-weight: 500;
+      }
+
+      .account-user-meta p {
+        font-size: 14px;
+        color: #666;
+        margin: 0;
+      }
+
+      .account-user-badge {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: #f4eee6;
+        color: #5d1f2d;
+        padding: 4px 10px;
+        border-radius: 4px;
+        margin-top: 8px;
+      }
+
+      .logout-btn {
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid #bbb;
+        border-radius: 6px;
+        color: #333;
+        font-size: 13.5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+
+      .logout-btn:hover {
+        background: #5d1f2d;
+        border-color: #5d1f2d;
+        color: #fff;
+      }
+
+      /* ACCOUNT TABS */
+      .account-tabs {
+        display: flex;
+        gap: 12px;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 28px;
+      }
+
+      .acc-tab-btn {
+        padding: 12px 20px;
+        border: none;
+        background: none;
+        font-size: 15px;
+        font-weight: 500;
+        color: #666;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+      }
+
+      .acc-tab-btn.active {
+        color: #5d1f2d;
+        font-weight: 600;
+      }
+
+      .acc-tab-btn.active::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #5d1f2d;
+      }
+
+      /* ORDER CARDS */
+      .order-card {
+        background: #ffffff;
+        border: 1px solid #e8e2d8;
+        border-radius: 12px;
+        padding: 22px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+        transition: all 0.25s ease;
+      }
+
+      .order-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        border-color: #dfd5c6;
+      }
+
+      .order-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f0eae1;
+        padding-bottom: 14px;
+        margin-bottom: 16px;
+      }
+
+      .order-card-header .order-number {
+        font-size: 16px;
+        font-weight: 700;
+        color: #111;
+      }
+
+      .order-card-header .order-date {
+        font-size: 13px;
+        color: #888;
+        margin-top: 3px;
+      }
+
+      .order-status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+
+      .status-placed { background: #e3f2fd; color: #1565c0; }
+      .status-processing { background: #fff3e0; color: #e65100; }
+      .status-shipped { background: #ede7f6; color: #512da8; }
+      .status-delivered { background: #e8f5e9; color: #2e7d32; }
+      .status-cancelled { background: #ffebee; color: #c62828; }
+
+      .order-items-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .order-item-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #444;
+      }
+
+      .order-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 14px;
+        border-top: 1px dashed #eee;
+      }
+
+      .order-total-amount {
+        font-size: 16px;
+        font-weight: 700;
+        color: #5d1f2d;
+      }
+
+      .order-track-link {
+        font-size: 13.5px;
+        color: #5d1f2d;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .order-track-link:hover {
+        text-decoration: underline;
+      }
+
+      .empty-orders-box {
+        text-align: center;
+        padding: 60px 20px;
+        background: #fff;
+        border-radius: 12px;
+        border: 1px dashed #dcd3c7;
+      }
+
+      /* PROFILE TAB */
+      .profile-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        background: #fff;
+        border: 1px solid #ebe5dc;
+        border-radius: 12px;
+        padding: 28px;
+      }
+
+      .profile-item label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #888;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+
+      .profile-item .val {
+        font-size: 16px;
+        font-weight: 600;
+        color: #222;
+      }
+
+      @media (max-width: 640px) {
+        .account-banner {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+        }
+        .order-card-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div data-header></div>
+
+    <main class="account-wrap">
+      <!-- USER BANNER -->
+      <div class="account-banner">
+        <div class="account-user-meta">
+          <h1 id="userName">Hello, Valued Client</h1>
+          <p id="userEmail">Loading account information…</p>
+          <span class="account-user-badge" id="userRole">S369 Member</span>
+        </div>
+        <button type="button" class="logout-btn" onclick="handleLogout()">Sign Out</button>
+      </div>
+
+      <!-- TABS -->
+      <div class="account-tabs">
+        <button type="button" class="acc-tab-btn active" id="tabOrdersBtn" onclick="switchAccountTab('orders')">
+          Order History
+        </button>
+        <button type="button" class="acc-tab-btn" id="tabProfileBtn" onclick="switchAccountTab('profile')">
+          Profile Details
+        </button>
+        <a href="wishlist.html" class="acc-tab-btn" style="text-decoration: none; color: inherit;">
+          My Wishlist ❤️
+        </a>
+      </div>
+
+      <!-- TAB CONTENT: ORDERS -->
+      <section id="ordersPane">
+        <div id="ordersList">
+          <div style="text-align: center; padding: 40px; color: #777;">Fetching your orders…</div>
+        </div>
+      </section>
+
+      <!-- TAB CONTENT: PROFILE -->
+      <section id="profilePane" style="display: none;">
+        <div class="profile-info-grid">
+          <div class="profile-item">
+            <label>Name</label>
+            <div class="val" id="profileName">—</div>
+          </div>
+          <div class="profile-item">
+            <label>Email Address</label>
+            <div class="val" id="profileEmail">—</div>
+          </div>
+          <div class="profile-item">
+            <label>Membership</label>
+            <div class="val" id="profileRole">VIP Customer</div>
+          </div>
+          <div class="profile-item">
+            <label>Account Status</label>
+            <div class="val" style="color: #1b5e20;">Active & Verified</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <div data-footer></div>
+
+    <!-- SCRIPTS -->
+    <script src="assets/js/config.js?v=2.2"></script>
+    <script src="assets/js/products.js?v=2.2"></script>
+    <script src="assets/js/store.js?v=2.2"></script>
+
+    <script>
+      S369.globalChrome("account");
+
+      let currentUser = null;
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Check authentication
+        currentUser = await S369.checkAuthSession();
+
+        if (!currentUser) {
+          window.location.href = "login.html?redirect=account.html";
+          return;
+        }
+
+        // Render user banner
+        document.getElementById("userName").textContent = `Welcome, ${currentUser.name || "Fragrance Connoisseur"}`;
+        document.getElementById("userEmail").textContent = currentUser.email || "";
+        document.getElementById("userRole").textContent = currentUser.role === "admin" ? "Administrator" : "S369 Member";
+
+        // Render profile tab
+        document.getElementById("profileName").textContent = currentUser.name || "—";
+        document.getElementById("profileEmail").textContent = currentUser.email || "—";
+        document.getElementById("profileRole").textContent = currentUser.role === "admin" ? "S369 Administrator" : "VIP Fragrance Client";
+
+        // Fetch Orders
+        loadUserOrders();
+      });
+
+      function switchAccountTab(tab) {
+        const tabOrdersBtn = document.getElementById("tabOrdersBtn");
+        const tabProfileBtn = document.getElementById("tabProfileBtn");
+        const ordersPane = document.getElementById("ordersPane");
+        const profilePane = document.getElementById("profilePane");
+
+        if (tab === "orders") {
+          tabOrdersBtn.classList.add("active");
+          tabProfileBtn.classList.remove("active");
+          ordersPane.style.display = "block";
+          profilePane.style.display = "none";
+        } else {
+          tabProfileBtn.classList.add("active");
+          tabOrdersBtn.classList.remove("active");
+          profilePane.style.display = "block";
+          ordersPane.style.display = "none";
+        }
+      }
+
+      async function loadUserOrders() {
+        const listEl = document.getElementById("ordersList");
+        const token = S369.getToken();
+
+        try {
+          const res = await fetch("http://localhost:5000/api/orders/my-orders", {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+            credentials: "include"
+          });
+
+          const data = await res.json();
+
+          if (!res.ok || !data.ok || !data.orders || data.orders.length === 0) {
+            listEl.innerHTML = `
+              <div class="empty-orders-box">
+                <div style="font-size: 36px; margin-bottom: 12px;">📦</div>
+                <h3 style="margin-bottom: 6px; font-family: var(--serif, serif); font-size: 20px;">No Orders Found</h3>
+                <p style="color: #777; font-size: 14px; margin-bottom: 18px;">You haven't placed any fragrance orders yet.</p>
+                <a href="shop.html" class="btn btn-primary" style="padding: 10px 22px;">Discover Fragrances</a>
+              </div>
+            `;
+            return;
+          }
+
+          listEl.innerHTML = data.orders.map(order => {
+            const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+              day: "numeric", month: "short", year: "numeric"
+            }) : "Recent";
+
+            const statusClass = `status-${(order.orderStatus || 'placed').toLowerCase()}`;
+            const items = order.items || [];
+
+            return `
+              <div class="order-card">
+                <div class="order-card-header">
+                  <div>
+                    <div class="order-number">Order #${order.orderId}</div>
+                    <div class="order-date">Placed on ${dateStr} · Method: ${order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online (Razorpay)'}</div>
+                  </div>
+                  <span class="order-status-badge ${statusClass}">
+                    ${order.orderStatus || 'Placed'}
+                  </span>
+                </div>
+
+                <div class="order-items-summary">
+                  ${items.map(i => `
+                    <div class="order-item-row">
+                      <span>• ${i.name || i.productId} (${i.size}) × ${i.quantity}</span>
+                      <strong>${S369.fmt(i.lineTotal || (i.price * i.quantity))}</strong>
+                    </div>
+                  `).join("")}
+                </div>
+
+                <div class="order-card-footer">
+                  <div>
+                    <span style="font-size: 13px; color: #777;">Grand Total: </span>
+                    <strong class="order-total-amount">${S369.fmt(order.totalAmount)}</strong>
+                  </div>
+                  <div style="display:flex; gap:14px; align-items:center;">
+                    <a href="http://localhost:5000/api/orders/${encodeURIComponent(order.orderId)}/invoice" target="_blank" style="font-size:13px; color:#5d1f2d; font-weight:700; text-decoration:underline; display:flex; align-items:center; gap:4px;">
+                      📄 Tax Invoice
+                    </a>
+                    <a href="track-order.html?order=${encodeURIComponent(order.orderId)}" class="order-track-link">
+                      Track Shipment →
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join("");
+
+        } catch (e) {
+          console.error("Order fetch error:", e);
+          listEl.innerHTML = `
+            <div class="empty-orders-box">
+              <p style="color: #b00020;">Unable to connect to order server at this time.</p>
+            </div>
+          `;
+        }
+      }
+
+      async function handleLogout() {
+        try {
+          await fetch("http://localhost:5000/api/auth/logout", {
+            method: "POST",
+            credentials: "include"
+          });
+        } catch (e) {}
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        window.location.href = "index.html";
+      }
+    </script>
+  </body>
+</html>

@@ -1,76 +1,813 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#5d1f2d" />
-    <link rel="stylesheet" href="assets/css/styles.css" />
-    <link rel="icon" href="data:," />
-    <title>Shop S369 Perfume | All Fragrances</title>
-    <meta name="description" content="S369 Perfume — signature Eau de Parfum in 30ml, 50ml and 100ml." />
-  </head>
-  <body>
-    <div data-header></div>
-    <main class="page-wrap">
-      <section class="page-hero">
-        <p class="eyebrow">S369 EAU DE PARFUM</p>
-        <h1>The Collection</h1>
-        <p>Signature fragrances. Three bottle sizes. Search by fragrance name or note, then choose the bottle that fits your ritual.</p>
-      </section>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#5d1f2d" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="icon" href="data:," />
+  <title>Shop Luxury Fragrances | S369 Perfume Haute Parfumerie</title>
+  <meta name="description" content="Explore S369 Luxury Eau de Parfum collection. Filter by Men, Women, Unisex, Fragrance Family and Price Range." />
 
-      <section class="toolbar">
-        <div class="search-inline">
-          <input id="shopSearch" type="search" placeholder="Search fragrance or note…" />
-        </div>
-        <select id="shopSort">
-          <option value="featured">Sort: Featured</option>
-          <option value="az">Name A–Z</option>
-          <option value="za">Name Z–A</option>
-          <option value="low">Price low to high</option>
-          <option value="high">Price high to low</option>
-        </select>
-      </section>
+  <style>
+    /* FLIPKART STYLE MODERN SHOPPING LAYOUT */
+    .shop-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
 
-      <section class="section">
-        <div class="product-grid" id="shopGrid"></div>
-      </section>
-    </main>
-    <div data-footer></div>
+    /* SIDEBAR FILTER PANEL */
+    .filter-sidebar {
+      background: #ffffff;
+      border: 1px solid #e9e2d8;
+      border-radius: 14px;
+      padding: 24px 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      position: sticky;
+      top: 90px;
+    }
 
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/products.js"></script>
-    <script src="assets/js/store.js"></script>
-    <script>
-      S369.globalChrome('shop');
-      const grid = document.getElementById('shopGrid');
-      const q = document.getElementById('shopSearch');
-      const sort = document.getElementById('shopSort');
+    .filter-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #eee5d8;
+      margin-bottom: 20px;
+    }
 
-      async function draw() {
-        let products = await S369.loadProductsFromApi();
-        let a = [...products];
-        let s = q.value.trim().toLowerCase();
+    .filter-header-bar h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #3e121c;
+      margin: 0;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        if (s) {
-          a = a.filter(p => (p.name + ' ' + p.tagline + ' ' + (p.short || '') + ' ' + (p.keywords || []).join(' ')).toLowerCase().includes(s));
-        }
+    .clear-filters-btn {
+      background: none;
+      border: none;
+      color: #b00020;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
 
-        if (sort.value === 'az') a.sort((x, y) => x.name.localeCompare(y.name));
-        if (sort.value === 'za') a.sort((x, y) => y.name.localeCompare(x.name));
-        if (sort.value === 'low') a.sort((x, y) => (x.prices?.['30ml']?.price || 399) - (y.prices?.['30ml']?.price || 399));
-        if (sort.value === 'high') a.sort((x, y) => (y.prices?.['30ml']?.price || 399) - (x.prices?.['30ml']?.price || 399));
+    .clear-filters-btn:hover {
+      background: #fdf0f0;
+    }
 
-        if (!a.length) {
-          grid.innerHTML = '<div class="empty-state"><h3>No fragrance found.</h3><p>Try another name or note.</p></div>';
-          return;
-        }
+    .filter-group {
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f0eae1;
+    }
 
-        S369.renderShopGrid(grid, a);
+    .filter-group:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .filter-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #5d1f2d;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .filter-option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .filter-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s ease;
+    }
+
+    .filter-label:hover {
+      color: #5d1f2d;
+    }
+
+    .filter-label-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-label input[type="checkbox"],
+    .filter-label input[type="radio"] {
+      width: 17px;
+      height: 17px;
+      accent-color: #5d1f2d;
+      cursor: pointer;
+    }
+
+    .filter-count-badge {
+      font-size: 11.5px;
+      color: #888;
+      background: #f7f3ec;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    /* PRICE INPUT RANGE */
+    .custom-price-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed #ebdccb;
+    }
+
+    .custom-price-wrap input {
+      width: 80px;
+      padding: 7px 8px;
+      border: 1px solid #d4c7b8;
+      border-radius: 5px;
+      font-size: 13px;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .custom-price-wrap input:focus {
+      border-color: #5d1f2d;
+    }
+
+    .custom-price-wrap button {
+      background: #5d1f2d;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 7px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .custom-price-wrap button:hover {
+      opacity: 0.9;
+    }
+
+    /* TOP TOOLBAR & CHIPS */
+    .shop-main-content {
+      min-width: 0;
+    }
+
+    .shop-top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      background: #ffffff;
+      padding: 18px 24px;
+      border: 1px solid #e9e2d8;
+      border-radius: 14px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+    }
+
+    .shop-results-info {
+      font-size: 14.5px;
+      color: #555;
+    }
+
+    .shop-results-info strong {
+      color: #1a1a1a;
+      font-weight: 700;
+    }
+
+    .shop-controls-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .shop-search-box {
+      position: relative;
+      width: 250px;
+    }
+
+    .shop-search-box input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      border: 1px solid #dcd4c8;
+      border-radius: 8px;
+      font-size: 13.5px;
+      outline: none;
+      transition: all 0.2s ease;
+      background: #faf7f2;
+      box-sizing: border-box;
+    }
+
+    .shop-search-box input:focus {
+      background: #fff;
+      border-color: #5d1f2d;
+      box-shadow: 0 0 0 3px rgba(93, 31, 45, 0.1);
+    }
+
+    .shop-search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    .shop-sort-select {
+      padding: 10px 14px;
+      border: 1px solid #dcd4c8;
+      border-radius: 8px;
+      font-size: 13.5px;
+      background: #faf7f2;
+      color: #222;
+      cursor: pointer;
+      outline: none;
+      font-weight: 600;
+    }
+
+    .shop-sort-select:focus {
+      border-color: #5d1f2d;
+    }
+
+    /* ACTIVE FILTER CHIPS */
+    .active-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #fdf5ea;
+      border: 1px solid #ebdccb;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #5d1f2d;
+    }
+
+    .filter-chip-remove {
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 1;
+      color: #999;
+      transition: color 0.15s ease;
+    }
+
+    .filter-chip-remove:hover {
+      color: #b00020;
+    }
+
+    /* MOBILE FILTER TRIGGER */
+    .mobile-filter-btn {
+      display: none;
+      padding: 10px 16px;
+      background: #5d1f2d;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .shop-container {
+        grid-template-columns: 1fr;
       }
 
-      q.oninput = draw;
-      sort.onchange = draw;
-      draw();
-    </script>
-  </body>
+      .filter-sidebar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        border-radius: 0;
+        overflow-y: auto;
+        padding: 30px 24px;
+      }
+
+      .filter-sidebar.active {
+        display: block;
+      }
+
+      .mobile-filter-btn {
+        display: inline-flex;
+      }
+
+      .close-mobile-filter {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div data-header></div>
+
+  <main class="page-wrap">
+    <section class="page-hero">
+      <p class="eyebrow">S369 HAUTE PARFUMERIE</p>
+      <h1>The Signature Collection</h1>
+      <p>Bespoke Eau de Parfum crafted with pure artisanal extracts. Discover your personal signature scent.</p>
+    </section>
+
+    <div class="shop-container">
+      
+      <!-- ================= FLIPKART STYLE SIDEBAR FILTERS ================= -->
+      <aside class="filter-sidebar" id="filterSidebar">
+        <div class="filter-header-bar">
+          <h2>
+            <span>⚡</span> Filters
+          </h2>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button type="button" class="clear-filters-btn" onclick="clearAllFilters()">Clear All</button>
+            <button type="button" class="close-mobile-filter" onclick="toggleMobileFilter()" style="display:none; background:none; border:none; font-size:22px; cursor:pointer;">✕</button>
+          </div>
+        </div>
+
+        <!-- 1. GENDER FILTER -->
+        <div class="filter-group">
+          <div class="filter-title">
+            <span>Ideal For (Gender)</span>
+          </div>
+          <div class="filter-option-list">
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="checkbox" name="gender" value="Men" onchange="applyFilters()">
+                <span>Men</span>
+              </span>
+              <span class="filter-count-badge" id="countMen">4</span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="checkbox" name="gender" value="Women" onchange="applyFilters()">
+                <span>Women</span>
+              </span>
+              <span class="filter-count-badge" id="countWomen">2</span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="checkbox" name="gender" value="Unisex" onchange="applyFilters()">
+                <span>Unisex</span>
+              </span>
+              <span class="filter-count-badge" id="countUnisex">2</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 2. PRICE RANGE FILTER -->
+        <div class="filter-group">
+          <div class="filter-title">
+            <span>Price Range (INR)</span>
+          </div>
+          <div class="filter-option-list">
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="radio" name="priceRange" value="all" checked onchange="handlePricePresetChange()">
+                <span>All Prices</span>
+              </span>
+              <span class="filter-count-badge" id="countPriceAll">6</span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="radio" name="priceRange" value="under500" onchange="handlePricePresetChange()">
+                <span>Under ₹500 (30ml)</span>
+              </span>
+              <span class="filter-count-badge" id="countPriceUnder500">6</span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="radio" name="priceRange" value="500to1000" onchange="handlePricePresetChange()">
+                <span>₹500 - ₹1,000 (50ml)</span>
+              </span>
+              <span class="filter-count-badge" id="countPrice500to1000">6</span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="radio" name="priceRange" value="above1000" onchange="handlePricePresetChange()">
+                <span>Above ₹1,000 (100ml)</span>
+              </span>
+              <span class="filter-count-badge" id="countPriceAbove1000">6</span>
+            </label>
+          </div>
+
+          <!-- Flipkart Style Custom Min / Max Price Inputs -->
+          <div class="custom-price-wrap">
+            <input type="number" id="minPriceInput" placeholder="Min ₹" min="0" oninput="applyFilters()" />
+            <span style="color:#888; font-size:12px;">to</span>
+            <input type="number" id="maxPriceInput" placeholder="Max ₹" min="0" oninput="applyFilters()" />
+            <button type="button" onclick="applyFilters()">Go</button>
+          </div>
+        </div>
+
+        <!-- 3. SCENT FAMILY / FRAGRANCE PROFILE -->
+        <div class="filter-group">
+          <div class="filter-title">
+            <span>Fragrance Family</span>
+          </div>
+          <div class="filter-option-list">
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="checkbox" name="scentFamily" value="Fresh & Aquatic" onchange="applyFilters()">
+                <span>Fresh & Aquatic</span>
+              </span>
+              <span class="filter-count-badge" id="countAquatic">1</span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="checkbox" name="scentFamily" value="Warm & Smoky" onchange="applyFilters()">
+                <span>Warm & Smoky</span>
+              </span>
+              <span class="filter-count-badge" id="countSmoky">1</span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="checkbox" name="scentFamily" value="Woody & Earthy" onchange="applyFilters()">
+                <span>Woody & Earthy</span>
+              </span>
+              <span class="filter-count-badge" id="countWoody">2</span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="checkbox" name="scentFamily" value="Floral & Fruity" onchange="applyFilters()">
+                <span>Floral & Fruity</span>
+              </span>
+              <span class="filter-count-badge" id="countFloral">1</span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="checkbox" name="scentFamily" value="Rich Oud & Amber" onchange="applyFilters()">
+                <span>Rich Oud & Amber</span>
+              </span>
+              <span class="filter-count-badge" id="countOud">1</span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="checkbox" name="scentFamily" value="Aromatic Fougère" onchange="applyFilters()">
+                <span>Aromatic Fougère</span>
+              </span>
+              <span class="filter-count-badge" id="countFougere">1</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 4. RATING FILTER -->
+        <div class="filter-group">
+          <div class="filter-title">
+            <span>Customer Rating</span>
+          </div>
+          <div class="filter-option-list">
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="radio" name="minRating" value="0" checked onchange="applyFilters()">
+                <span>All Ratings</span>
+              </span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="radio" name="minRating" value="4.8" onchange="applyFilters()">
+                <span>4.8 ★ & Above</span>
+              </span>
+            </label>
+            <label class="filter-label">
+              <span class="filter-label-left">
+                <input type="radio" name="minRating" value="4.9" onchange="applyFilters()">
+                <span>4.9 ★ & Above</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- ================= PRODUCT CATALOG RESULTS ================= -->
+      <section class="shop-main-content">
+        
+        <!-- TOOLBAR -->
+        <div class="shop-top-bar">
+          <div class="shop-results-info">
+            Showing <strong id="visibleCount">6</strong> of <strong id="totalCount">6</strong> Fragrances
+          </div>
+
+          <div class="shop-controls-right">
+            <button type="button" class="mobile-filter-btn" onclick="toggleMobileFilter()">
+              <span>⚙</span> Filter Fragrances
+            </button>
+
+            <div class="shop-search-box">
+              <span class="shop-search-icon">🔍</span>
+              <input id="shopSearch" type="search" placeholder="Search notes, ingredients, scents…" oninput="applyFilters()" />
+            </div>
+
+            <select id="shopSort" class="shop-sort-select" onchange="applyFilters()">
+              <option value="featured">Sort: Featured</option>
+              <option value="low">Price: Low to High</option>
+              <option value="high">Price: High to Low</option>
+              <option value="rating">Rating: High to Low</option>
+              <option value="az">Name: A to Z</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ACTIVE CHIPS -->
+        <div class="active-chips-container" id="activeChips"></div>
+
+        <!-- PRODUCTS GRID -->
+        <div class="product-grid" id="shopGrid"></div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <div data-footer></div>
+
+  <!-- SCRIPTS -->
+  <script src="assets/js/config.js?v=2.2"></script>
+  <script src="assets/js/products.js?v=2.2"></script>
+  <script src="assets/js/store.js?v=2.2"></script>
+
+  <script>
+    S369.globalChrome('shop');
+
+    const grid = document.getElementById('shopGrid');
+    const q = document.getElementById('shopSearch');
+    const sort = document.getElementById('shopSort');
+    const activeChipsContainer = document.getElementById('activeChips');
+    const visibleCount = document.getElementById('visibleCount');
+    const totalCount = document.getElementById('totalCount');
+    const minPriceInput = document.getElementById('minPriceInput');
+    const maxPriceInput = document.getElementById('maxPriceInput');
+
+    function toggleMobileFilter() {
+      const sidebar = document.getElementById('filterSidebar');
+      if (sidebar) sidebar.classList.toggle('active');
+    }
+
+    function handlePricePresetChange() {
+      if (minPriceInput) minPriceInput.value = '';
+      if (maxPriceInput) maxPriceInput.value = '';
+      applyFilters();
+    }
+
+    function clearAllFilters() {
+      document.querySelectorAll('input[name="gender"]').forEach(el => el.checked = false);
+      document.querySelectorAll('input[name="scentFamily"]').forEach(el => el.checked = false);
+      const allPrice = document.querySelector('input[name="priceRange"][value="all"]');
+      if (allPrice) allPrice.checked = true;
+      if (minPriceInput) minPriceInput.value = '';
+      if (maxPriceInput) maxPriceInput.value = '';
+      const allRating = document.querySelector('input[name="minRating"][value="0"]');
+      if (allRating) allRating.checked = true;
+      if (q) q.value = '';
+      if (sort) sort.value = 'featured';
+      applyFilters();
+    }
+
+    function updateDynamicFilterCounts(allProducts) {
+      if (!allProducts || !allProducts.length) return;
+
+      const cMen = allProducts.filter(p => (p.gender === 'Men' || p.gender === 'Unisex' || (p.keywords||[]).includes('men'))).length;
+      const cWomen = allProducts.filter(p => (p.gender === 'Women' || p.gender === 'Unisex' || (p.keywords||[]).includes('women'))).length;
+      const cUnisex = allProducts.filter(p => (p.gender === 'Unisex' || (p.keywords||[]).includes('unisex'))).length;
+
+      const elMen = document.getElementById('countMen');
+      const elWomen = document.getElementById('countWomen');
+      const elUnisex = document.getElementById('countUnisex');
+      if (elMen) elMen.textContent = cMen;
+      if (elWomen) elWomen.textContent = cWomen;
+      if (elUnisex) elUnisex.textContent = cUnisex;
+
+      const countFamily = (val) => allProducts.filter(p => (p.scentFamily || '').toLowerCase().includes(val.toLowerCase())).length;
+      const elAquatic = document.getElementById('countAquatic');
+      const elSmoky = document.getElementById('countSmoky');
+      const elWoody = document.getElementById('countWoody');
+      const elFloral = document.getElementById('countFloral');
+      const elOud = document.getElementById('countOud');
+      const elFougere = document.getElementById('countFougere');
+
+      if (elAquatic) elAquatic.textContent = countFamily('Aquatic');
+      if (elSmoky) elSmoky.textContent = countFamily('Smoky');
+      if (elWoody) elWoody.textContent = countFamily('Woody');
+      if (elFloral) elFloral.textContent = countFamily('Floral');
+      if (elOud) elOud.textContent = countFamily('Oud');
+      if (elFougere) elFougere.textContent = countFamily('Fougère') || countFamily('Fougere');
+    }
+
+    async function applyFilters() {
+      let products = await S369.loadProductsFromApi();
+      if (!products || !products.length) products = window.S369_PRODUCTS || [];
+      if (totalCount) totalCount.textContent = products.length;
+
+      updateDynamicFilterCounts(products);
+
+      // Read selected filters
+      const selectedGenders = Array.from(document.querySelectorAll('input[name="gender"]:checked')).map(el => el.value);
+      const selectedFamilies = Array.from(document.querySelectorAll('input[name="scentFamily"]:checked')).map(el => el.value);
+      const priceRange = document.querySelector('input[name="priceRange"]:checked')?.value || 'all';
+      const minRating = parseFloat(document.querySelector('input[name="minRating"]:checked')?.value || '0');
+      const searchTerm = (q?.value || '').trim().toLowerCase();
+      const minVal = parseFloat(minPriceInput?.value || '0');
+      const maxVal = parseFloat(maxPriceInput?.value || '999999');
+
+      // Render Active Filter Chips
+      renderActiveChips(selectedGenders, selectedFamilies, priceRange, minRating, searchTerm, minPriceInput?.value, maxPriceInput?.value);
+
+      // Filter product list
+      let filtered = products.filter(p => {
+        // 1. Gender Filter
+        if (selectedGenders.length > 0) {
+          const pGender = p.gender || 'Unisex';
+          const pKeywords = (p.keywords || []).map(k => String(k).toLowerCase());
+          const isGenderMatch = selectedGenders.some(g => {
+            const lowG = g.toLowerCase();
+            if (lowG === 'men') return pGender === 'Men' || pGender === 'Unisex' || pKeywords.includes('men');
+            if (lowG === 'women') return pGender === 'Women' || pGender === 'Unisex' || pKeywords.includes('women');
+            if (lowG === 'unisex') return pGender === 'Unisex' || pKeywords.includes('unisex');
+            return pGender === g;
+          });
+          if (!isGenderMatch) return false;
+        }
+
+        // 2. Fragrance Family Filter
+        if (selectedFamilies.length > 0) {
+          const pFamily = (p.scentFamily || '').toLowerCase();
+          const isFamilyMatch = selectedFamilies.some(f => pFamily.includes(f.toLowerCase()) || f.toLowerCase().includes(pFamily));
+          if (!isFamilyMatch) return false;
+        }
+
+        // 3. Price Range Filter (Presets & Custom Inputs)
+        const pricesList = Object.values(p.prices || {}).map(x => x.price || 0);
+        if (!pricesList.length) pricesList.push(p.price || 399);
+
+        // Custom min/max inputs take precedence if filled
+        if (minPriceInput?.value || maxPriceInput?.value) {
+          const inCustomRange = pricesList.some(pr => pr >= (minVal || 0) && pr <= (maxVal || 999999));
+          if (!inCustomRange) return false;
+        } else if (priceRange !== 'all') {
+          if (priceRange === 'under500') {
+            const match = pricesList.some(pr => pr > 0 && pr <= 500);
+            if (!match) return false;
+          } else if (priceRange === '500to1000') {
+            const match = pricesList.some(pr => pr > 500 && pr <= 1000);
+            if (!match) return false;
+          } else if (priceRange === 'above1000') {
+            const match = pricesList.some(pr => pr > 1000);
+            if (!match) return false;
+          }
+        }
+
+        // 4. Rating Filter
+        if (minRating > 0 && (p.rating || 5.0) < minRating) {
+          return false;
+        }
+
+        // 5. Search Filter (matches name, tagline, description, keywords, notes)
+        if (searchTerm) {
+          const notesText = (p.notes || []).map(n => (n.label || '') + ' ' + (n.value || '')).join(' ');
+          const haystack = (p.name + ' ' + (p.tagline || '') + ' ' + (p.short || '') + ' ' + (p.scentFamily || '') + ' ' + (p.gender || '') + ' ' + (p.keywords || []).join(' ') + ' ' + notesText).toLowerCase();
+          if (!haystack.includes(searchTerm)) return false;
+        }
+
+        return true;
+      });
+
+      // Sorting
+      const sortMode = sort?.value || 'featured';
+      if (sortMode === 'rating') {
+        filtered.sort((a, b) => (b.rating || 5.0) - (a.rating || 5.0));
+      } else if (sortMode === 'low') {
+        const getMinP = (x) => Math.min(...Object.values(x.prices || {}).map(v => v.price || 9999));
+        filtered.sort((a, b) => getMinP(a) - getMinP(b));
+      } else if (sortMode === 'high') {
+        const getMaxP = (x) => Math.max(...Object.values(x.prices || {}).map(v => v.price || 0));
+        filtered.sort((a, b) => getMaxP(b) - getMaxP(a));
+      } else if (sortMode === 'az') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      if (visibleCount) visibleCount.textContent = filtered.length;
+
+      if (!filtered.length) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; background: #fff; border-radius: 14px; border: 1px dashed #dcd4c8;">
+            <div style="font-size: 42px; margin-bottom: 12px;">🥀</div>
+            <h3 style="color:#5d1f2d; font-size:22px; margin-bottom:8px; font-family:var(--serif, Georgia, serif);">No fragrance matches your selection</h3>
+            <p style="color:#666; margin-bottom:20px; font-size:14.5px;">Try adjusting your gender, scent family or price range filters to discover other blends.</p>
+            <button type="button" class="btn btn-dark" style="padding: 10px 24px; font-weight: 700;" onclick="clearAllFilters()">Clear All Filters</button>
+          </div>
+        `;
+        return;
+      }
+
+      S369.renderShopGrid(grid, filtered);
+    }
+
+    function renderActiveChips(genders, families, price, rating, search, minCustom, maxCustom) {
+      if (!activeChipsContainer) return;
+      let chips = [];
+
+      genders.forEach(g => {
+        chips.push(`<span class="filter-chip">${g} <span class="filter-chip-remove" onclick="removeFilter('gender', '${g}')">×</span></span>`);
+      });
+
+      families.forEach(f => {
+        chips.push(`<span class="filter-chip">${f} <span class="filter-chip-remove" onclick="removeFilter('scentFamily', '${f}')">×</span></span>`);
+      });
+
+      if (minCustom || maxCustom) {
+        const label = `₹${minCustom || 0} - ₹${maxCustom || 'Any'}`;
+        chips.push(`<span class="filter-chip">${label} <span class="filter-chip-remove" onclick="removeFilter('customPrice')">×</span></span>`);
+      } else if (price !== 'all') {
+        const label = price === 'under500' ? 'Under ₹500' : (price === '500to1000' ? '₹500 - ₹1,000' : 'Above ₹1,000');
+        chips.push(`<span class="filter-chip">${label} <span class="filter-chip-remove" onclick="removeFilter('priceRange', 'all')">×</span></span>`);
+      }
+
+      if (rating > 0) {
+        chips.push(`<span class="filter-chip">${rating}★ & Above <span class="filter-chip-remove" onclick="removeFilter('minRating', '0')">×</span></span>`);
+      }
+
+      if (search) {
+        chips.push(`<span class="filter-chip">Search: "${search}" <span class="filter-chip-remove" onclick="removeFilter('search')">×</span></span>`);
+      }
+
+      if (chips.length > 0) {
+        activeChipsContainer.innerHTML = `
+          <span style="font-size:12px; font-weight:700; color:#888; text-transform:uppercase;">Active Filters:</span>
+          ${chips.join('')}
+          <button type="button" onclick="clearAllFilters()" style="background:none; border:none; color:#b00020; font-size:12px; font-weight:700; cursor:pointer; text-decoration:underline; margin-left:6px;">Clear All</button>
+        `;
+      } else {
+        activeChipsContainer.innerHTML = '';
+      }
+    }
+
+    function removeFilter(type, value) {
+      if (type === 'gender' || type === 'scentFamily') {
+        const el = document.querySelector(`input[name="${type}"][value="${value}"]`);
+        if (el) el.checked = false;
+      } else if (type === 'priceRange') {
+        const el = document.querySelector(`input[name="priceRange"][value="all"]`);
+        if (el) el.checked = true;
+      } else if (type === 'customPrice') {
+        if (minPriceInput) minPriceInput.value = '';
+        if (maxPriceInput) maxPriceInput.value = '';
+      } else if (type === 'minRating') {
+        const el = document.querySelector(`input[name="minRating"][value="0"]`);
+        if (el) el.checked = true;
+      } else if (type === 'search') {
+        if (q) q.value = '';
+      }
+      applyFilters();
+    }
+
+    // Initialize on load
+    applyFilters();
+  </script>
+</body>
 </html>

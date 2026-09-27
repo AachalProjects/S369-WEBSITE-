@@ -1,474 +1,774 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S369 Perfume - Login / Register</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5d1f2d">
+  <title>Account — S369 Perfume | Signature Eau de Parfum</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:,">
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <style>
+    :root {
+      --wine: #5d1f2d;
+      --wine-dark: #3e121c;
+      --wine-light: #7c2e3f;
+      --cream: #fbf9f5;
+      --gold: #c5a059;
+      --text: #1a1a1a;
+      --muted: #767676;
+      --border: #e6dfd5;
+      --transition-smooth: all 0.25s ease;
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f8f5ef;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    body {
+      background: radial-gradient(circle at 10% 20%, #f7f3ed 0%, #ede6db 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: var(--text);
+    }
 
-        .container {
-            width: 400px;
-            background: white;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        }
+    .auth-page-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 60px;
+    }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border: 1px solid rgba(230, 223, 213, 0.95);
+      border-radius: 16px;
+      padding: 38px 34px;
+      box-shadow: 0 16px 40px rgba(93, 31, 45, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+      position: relative;
+    }
 
-        .logo h1 {
-            font-size: 30px;
-            letter-spacing: 3px;
-        }
+    .auth-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--wine), var(--gold), var(--wine));
+      border-radius: 16px 16px 0 0;
+    }
 
-        .logo p {
-            color: #777;
-            margin-top: 5px;
-        }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
 
-        .tabs {
-            display: flex;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #ddd;
-        }
+    .auth-logo-img {
+      height: 44px;
+      margin-bottom: 12px;
+    }
 
-        .tabs button {
-            width: 50%;
-            padding: 12px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
+    .auth-header h1 {
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--wine-dark);
+      margin-bottom: 6px;
+      font-family: var(--serif, serif);
+    }
 
-        .tabs button.active {
-            border-bottom: 2px solid #111;
-            font-weight: bold;
-        }
+    .auth-header p {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin: 0;
+    }
 
-        .form {
-            display: none;
-        }
+    /* DIRECT ROBUST TAB BUTTONS */
+    .auth-tabs {
+      display: flex;
+      gap: 10px;
+      background: #f5ede2;
+      padding: 6px;
+      border-radius: 10px;
+      margin-bottom: 26px;
+    }
 
-        .form.active {
-            display: block;
-        }
+    .auth-tab-btn {
+      flex: 1;
+      padding: 12px 14px;
+      border: 1px solid #dcd3c7;
+      background: #fdfbf9;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #555555;
+      cursor: pointer !important;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      text-align: center;
+      text-decoration: none !important;
+      display: inline-block;
+      outline: none;
+      user-select: none;
+      box-sizing: border-box;
+    }
 
-        label {
-            display: block;
-            margin: 12px 0 6px;
-            font-size: 14px;
-        }
+    .auth-tab-btn:hover {
+      color: #111;
+      border-color: #5d1f2d;
+      background: #f9f5f0;
+    }
 
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
+    .auth-tab-btn.active {
+      background: #5d1f2d !important;
+      color: #ffffff !important;
+      border-color: #5d1f2d !important;
+      box-shadow: 0 4px 12px rgba(93, 31, 45, 0.25);
+    }
 
-        .submit-btn {
-            width: 100%;
-            margin-top: 20px;
-            padding: 13px;
-            border: none;
-            border-radius: 6px;
-            background: #111;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    /* INPUTS */
+    .input-group {
+      margin-bottom: 18px;
+    }
 
-        .submit-btn:hover {
-            background: #333;
-        }
+    .input-group label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #333;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
 
-        .message {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 14px;
-            min-height: 20px;
-        }
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
 
-        .back {
-            text-align: center;
-            margin-top: 20px;
-        }
+    .input-wrapper input {
+      width: 100%;
+      padding: 13px 44px 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      background: #faf8f5;
+      color: var(--text);
+      transition: var(--transition-smooth);
+      outline: none;
+      box-sizing: border-box;
+    }
 
-        .back a {
-            color: #111;
-            text-decoration: none;
-        }
+    .input-wrapper input:focus {
+      background: #fff;
+      border-color: var(--wine);
+      box-shadow: 0 0 0 3px rgba(93, 31, 45, 0.12);
+    }
 
-        .back a:hover {
-            text-decoration: underline;
+    .pwd-toggle-btn {
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #777;
+      padding: 8px;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .form-extras {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      margin-top: -2px;
+      margin-bottom: 22px;
+    }
+
+    .remember-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #555;
+    }
+
+    .remember-wrap input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--wine);
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      color: var(--wine);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    /* SUBMIT BUTTON */
+    .auth-submit-btn {
+      width: 100%;
+      padding: 15px 20px;
+      background: #5d1f2d !important;
+      color: #ffffff !important;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      cursor: pointer !important;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(93, 31, 45, 0.25);
+    }
+
+    .auth-submit-btn:hover {
+      background: #7c2e3f !important;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(93, 31, 45, 0.35);
+    }
+
+    .auth-submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .auth-submit-btn.loading .btn-spinner {
+      display: inline-block;
+    }
+
+    .auth-feedback {
+      margin-top: 14px;
+      font-size: 14px;
+      text-align: center;
+      min-height: 22px;
+      line-height: 1.4;
+    }
+
+    .auth-feedback.error {
+      color: #b00020;
+      font-weight: 600;
+    }
+
+    .auth-feedback.success {
+      color: #1b5e20;
+      font-weight: 600;
+    }
+
+    .switch-toggle-note {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13.5px;
+      color: #666;
+    }
+
+    .switch-toggle-btn {
+      background: none;
+      border: none;
+      color: var(--wine);
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 13.5px;
+      padding: 0 4px;
+    }
+
+    .auth-footer-links {
+      text-align: center;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 13.5px;
+      color: #777;
+    }
+
+    .auth-footer-links a {
+      color: var(--wine);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    @media (max-width: 520px) {
+      .auth-card {
+        padding: 28px 20px;
+      }
+    }
+  </style>
+
+  <!-- GUARANTEED GLOBAL TAB SWITCHER & PASSWORD VISIBILITY SCRIPT -->
+  <script>
+    window.togglePasswordVisibility = function(fieldId, btn) {
+      var field = document.getElementById(fieldId);
+      if (!field) return;
+      var eyeOpen = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+      var eyeSlash = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+      if (field.type === "password") {
+        field.type = "text";
+        if (btn) {
+          btn.innerHTML = eyeSlash;
+          btn.setAttribute("aria-label", "Hide password");
+          btn.setAttribute("title", "Hide password");
         }
-    </style>
+      } else {
+        field.type = "password";
+        if (btn) {
+          btn.innerHTML = eyeOpen;
+          btn.setAttribute("aria-label", "Show password");
+          btn.setAttribute("title", "Show password");
+        }
+      }
+    };
+
+    window.switchTab = function(tab) {
+      console.log("Switching tab to:", tab);
+      var loginForm = document.getElementById("loginForm");
+      var registerForm = document.getElementById("registerForm");
+      var loginBtn = document.getElementById("loginTabBtn");
+      var registerBtn = document.getElementById("registerTabBtn");
+      var title = document.getElementById("authTitle");
+      var subtitle = document.getElementById("authSubtitle");
+
+      var loginFeedback = document.getElementById("loginFeedback");
+      var registerFeedback = document.getElementById("registerFeedback");
+      if (loginFeedback) loginFeedback.innerHTML = "";
+      if (registerFeedback) registerFeedback.innerHTML = "";
+
+      if (tab === "register") {
+        if (loginForm) loginForm.style.setProperty("display", "none", "important");
+        if (registerForm) registerForm.style.setProperty("display", "block", "important");
+        if (loginBtn) loginBtn.classList.remove("active");
+        if (registerBtn) registerBtn.classList.add("active");
+        if (title) title.textContent = "Create an Account";
+        if (subtitle) subtitle.textContent = "Join S369 for order tracking, fast checkout & perks";
+      } else {
+        if (loginForm) loginForm.style.setProperty("display", "block", "important");
+        if (registerForm) registerForm.style.setProperty("display", "none", "important");
+        if (loginBtn) loginBtn.classList.add("active");
+        if (registerBtn) registerBtn.classList.remove("active");
+        if (title) title.textContent = "Welcome to S369";
+        if (subtitle) subtitle.textContent = "Sign in or create an account to manage your signature scents";
+      }
+    };
+  </script>
 </head>
 
 <body>
+  <!-- HEADER -->
+  <div data-header></div>
 
-<div class="container">
+  <!-- AUTH MAIN -->
+  <main class="auth-page-wrapper">
+    <div class="auth-card" id="authCard">
+      
+      <!-- LOGO & BRAND HEAD -->
+      <div class="auth-header">
+        <img class="auth-logo-img" src="assets/images/brand/logo-red.png" alt="S369 Perfume Logo">
+        <h1 id="authTitle">Welcome to S369</h1>
+        <p id="authSubtitle">Sign in or create an account to manage your signature scents</p>
+      </div>
 
-    <!-- LOGO -->
-    <div class="logo">
-        <h1>S369</h1>
-        <p>Perfume</p>
-    </div>
+      <!-- NOTICE IF ALREADY LOGGED IN -->
+      <div id="alreadyLoggedInNotice" style="display:none; margin-bottom: 20px; padding: 12px 14px; background: #fdf5ea; border: 1px solid #ebdccb; border-radius: 8px; font-size: 13.5px; text-align: center;"></div>
 
-    <!-- TABS -->
-    <div class="tabs">
+      <!-- TABS -->
+      <div class="auth-tabs" id="tabContainer">
+        <a href="login.html" class="auth-tab-btn active" id="loginTabBtn" onclick="if(window.switchTab){ window.switchTab('login'); return false; }">
+          Sign In
+        </a>
+        <a href="register.html" class="auth-tab-btn" id="registerTabBtn" onclick="if(window.switchTab){ window.switchTab('register'); return false; }">
+          Create Account
+        </a>
+      </div>
 
-        <button
-            id="loginTab"
-            type="button"
-            class="active"
-            onclick="showForm('login')">
-            Login
+      <!-- ================= LOGIN FORM ================= -->
+      <form id="loginForm" style="display: block;" onsubmit="handleLogin(event)">
+        <div class="input-group">
+          <label for="loginEmail">Email Address</label>
+          <div class="input-wrapper">
+            <input type="email" id="loginEmail" placeholder="name@example.com" autocomplete="email">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="loginPassword">Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password">
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this)" aria-label="Toggle password view" title="Toggle password view">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-extras">
+          <label class="remember-wrap">
+            <input type="checkbox" id="rememberMe" checked>
+            <span>Remember me</span>
+          </label>
+          <a href="forgot-password.html" class="forgot-link">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" id="loginSubmitBtn">
+          <span class="btn-spinner"></span>
+          <span class="btn-text">Sign In</span>
         </button>
 
-        <button
-            id="registerTab"
-            type="button"
-            onclick="showForm('register')">
-            Register
+        <div id="loginFeedback" class="auth-feedback" aria-live="polite"></div>
+
+        <p class="switch-toggle-note">
+          New to S369?
+          <a href="register.html" class="switch-toggle-btn" onclick="if(window.switchTab){ window.switchTab('register'); return false; }">Create an Account</a>
+        </p>
+      </form>
+
+      <!-- ================= REGISTER FORM ================= -->
+      <form id="registerForm" style="display: none;" onsubmit="handleRegister(event)">
+        <div class="input-group">
+          <label for="registerName">Full Name</label>
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="registerName"
+              placeholder="e.g. Aachal Sharma"
+              autocomplete="name"
+              required
+              pattern="^[A-Za-z\s]{2,50}$"
+              title="Full Name must contain only letters and spaces (min 2 characters)"
+              oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+            >
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="registerEmail">Email Address</label>
+          <div class="input-wrapper">
+            <input type="email" id="registerEmail" placeholder="name@example.com" autocomplete="email">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="registerPassword">Create Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="registerPassword" placeholder="At least 6 characters" autocomplete="new-password">
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('registerPassword', this)" aria-label="Toggle password view" title="Toggle password view">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-extras">
+          <label class="remember-wrap">
+            <input type="checkbox" id="registerTerms" checked>
+            <span>I accept the <a href="policies.html#terms" target="_blank" style="color:var(--wine); font-weight:600;">Terms & Policies</a></span>
+          </label>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" id="registerSubmitBtn">
+          <span class="btn-spinner"></span>
+          <span class="btn-text">Create Account</span>
         </button>
 
-    </div>
+        <div id="registerFeedback" class="auth-feedback" aria-live="polite"></div>
 
+        <p class="switch-toggle-note">
+          Already have an account?
+          <a href="login.html" class="switch-toggle-btn" onclick="if(window.switchTab){ window.switchTab('login'); return false; }">Sign In</a>
+        </p>
+      </form>
 
-    <!-- ================= LOGIN ================= -->
-
-    <div id="loginForm" class="form active">
-
-        <label for="loginEmail">Email</label>
-
-        <input
-            type="email"
-            id="loginEmail"
-            placeholder="Enter your email"
-        >
-
-        <label for="loginPassword">Password</label>
-
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Enter your password"
-        >
-
-        <button
-            type="button"
-            class="submit-btn"
-            onclick="login()">
-            Login
-        </button>
-
-        <div id="loginMessage" class="message"></div>
+      <!-- BOTTOM NAVIGATION -->
+      <div class="auth-footer-links">
+        <a href="index.html">← Boutique Home</a> · <a href="shop.html">Shop Fragrances</a>
+      </div>
 
     </div>
+  </main>
 
+  <!-- FOOTER -->
+  <div data-footer></div>
 
-    <!-- ================= REGISTER ================= -->
+  <!-- SCRIPTS -->
+  <script src="assets/js/config.js?v=2.2"></script>
+  <script src="assets/js/products.js?v=2.2"></script>
+  <script src="assets/js/store.js?v=2.2"></script>
 
-    <div id="registerForm" class="form">
-
-        <label for="registerName">Name</label>
-
-        <input
-            type="text"
-            id="registerName"
-            placeholder="Enter your name"
-        >
-
-        <label for="registerEmail">Email</label>
-
-        <input
-            type="email"
-            id="registerEmail"
-            placeholder="Enter your email"
-        >
-
-        <label for="registerPassword">Password</label>
-
-        <input
-            type="password"
-            id="registerPassword"
-            placeholder="Minimum 6 characters"
-        >
-
-        <button
-            type="button"
-            class="submit-btn"
-            onclick="register()">
-            Create Account
-        </button>
-
-        <div id="registerMessage" class="message"></div>
-
-    </div>
-
-
-    <!-- BACK -->
-    <div class="back">
-        <a href="index.html">← Back to Home</a>
-    </div>
-
-</div>
-
-
-<script>
-
-const API_BASE = "http://localhost:5000";
-
-
-// ======================================================
-// SWITCH LOGIN / REGISTER
-// ======================================================
-
-function showForm(type) {
-
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
-
-    const loginTab = document.getElementById("loginTab");
-    const registerTab = document.getElementById("registerTab");
-
-    if (type === "register") {
-
-        loginForm.classList.remove("active");
-        registerForm.classList.add("active");
-
-        loginTab.classList.remove("active");
-        registerTab.classList.add("active");
-
-    } else {
-
-        registerForm.classList.remove("active");
-        loginForm.classList.add("active");
-
-        registerTab.classList.remove("active");
-        loginTab.classList.add("active");
-    }
-}
-
-
-// ======================================================
-// REGISTER
-// ======================================================
-
-async function register() {
-
-    const name =
-        document.getElementById("registerName").value.trim();
-
-    const email =
-        document.getElementById("registerEmail").value.trim();
-
-    const password =
-        document.getElementById("registerPassword").value;
-
-    const message =
-        document.getElementById("registerMessage");
-
-
-    // Clear previous message
-    message.textContent = "";
-
-
-    // Validation
-    if (!name || !email || !password) {
-
-        message.textContent =
-            "Please fill all fields.";
-
-        return;
-    }
-
-
-    if (password.length < 6) {
-
-        message.textContent =
-            "Password must be at least 6 characters.";
-
-        return;
-    }
-
-
+  <script>
+    // Initialize Site Navigation Chrome
     try {
+      if (window.S369 && S369.globalChrome) S369.globalChrome("login");
+    } catch(e) {
+      console.warn("Global chrome error:", e);
+    }
 
-        const response = await fetch(
-            `${API_BASE}/api/auth/register`,
-            {
-                method: "POST",
+    window.API_BASE = window.API_BASE || "http://localhost:5000";
+    window.CREDENTIALS_MODE = window.location.protocol === "file:" ? "same-origin" : "include";
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+    // Bind forms & tabs in DOMContentLoaded
+    document.addEventListener("DOMContentLoaded", async function() {
+      var regBtn = document.getElementById("registerTabBtn");
+      var logBtn = document.getElementById("loginTabBtn");
+      if (regBtn) regBtn.addEventListener("click", function(e) { e.preventDefault(); window.switchTab("register"); });
+      if (logBtn) logBtn.addEventListener("click", function(e) { e.preventDefault(); window.switchTab("login"); });
 
-                body: JSON.stringify({
-                    name: name,
-                    email: email,
-                    password: password
-                })
+      var loginFm = document.getElementById("loginForm");
+      var registerFm = document.getElementById("registerForm");
+      if (loginFm) loginFm.addEventListener("submit", window.handleLogin);
+      if (registerFm) registerFm.addEventListener("submit", window.handleRegister);
+
+      var urlParams = new URLSearchParams(window.location.search);
+      if (window.location.hash === "#register" || urlParams.get("tab") === "register") {
+        window.switchTab("register");
+      }
+
+      // Check current session
+      try {
+        if (window.S369 && S369.checkAuthSession) {
+          var existingUser = await S369.checkAuthSession();
+          if (existingUser) {
+            var redirectUrl = urlParams.get("redirect");
+            if (redirectUrl) {
+              window.location.href = redirectUrl;
+              return;
             }
-        );
+            var notice = document.getElementById("alreadyLoggedInNotice");
+            if (notice) {
+              notice.style.display = "block";
+              notice.innerHTML = `Signed in as <strong>${existingUser.name}</strong> (${existingUser.email}). <a href="account.html" style="color:var(--wine); font-weight:600; text-decoration:underline;">View Account</a> or <a href="#" onclick="handleLogoutOnLoginPage(event)" style="color:#b00020; margin-left:8px; text-decoration:underline;">Sign Out</a>`;
+            }
+          }
+        }
+      } catch (e) {
+        console.debug("Session check:", e);
+      }
+    });
 
+    window.handleLogoutOnLoginPage = async function(e) {
+      if (e) e.preventDefault();
+      try {
+        await fetch(`${window.API_BASE}/api/auth/logout`, { method: "POST", credentials: window.CREDENTIALS_MODE });
+      } catch (err) {}
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      var notice = document.getElementById("alreadyLoggedInNotice");
+      if (notice) notice.style.display = "none";
+      if (window.S369 && S369.toast) S369.toast("Signed out successfully.");
+    };
 
-        const data = await response.json();
+    window.setBtnLoading = function(btn, loading) {
+      if (!btn) return;
+      if (loading) {
+        btn.disabled = true;
+        btn.classList.add("loading");
+      } else {
+        btn.disabled = false;
+        btn.classList.remove("loading");
+      }
+    };
 
+    window.handleLogin = async function(e) {
+      if (e) e.preventDefault();
+      var emailEl = document.getElementById("loginEmail");
+      var passEl = document.getElementById("loginPassword");
+      var feedback = document.getElementById("loginFeedback");
+      var submitBtn = document.getElementById("loginSubmitBtn");
+
+      var email = (emailEl ? emailEl.value : "").trim();
+      var password = passEl ? passEl.value : "";
+
+      if (feedback) {
+        feedback.className = "auth-feedback";
+        feedback.innerHTML = "";
+      }
+
+      if (!email || !password) {
+        if (feedback) {
+          feedback.className = "auth-feedback error";
+          feedback.textContent = "Please provide both email and password.";
+        }
+        return;
+      }
+
+      window.setBtnLoading(submitBtn, true);
+
+      try {
+        var response = await fetch(`${window.API_BASE}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: window.CREDENTIALS_MODE,
+          body: JSON.stringify({ email: email, password: password })
+        });
+
+        var data = await response.json();
 
         if (!response.ok) {
-
-            message.textContent =
-                data.message || "Registration failed.";
-
-            return;
+          throw new Error(data.message || "Invalid credentials.");
         }
 
+        if (data.token) localStorage.setItem("token", data.token);
+        if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
 
-        message.textContent =
-            "Registration successful! You can now login.";
+        if (feedback) {
+          feedback.className = "auth-feedback success";
+          feedback.textContent = "Signed in successfully. Syncing your bag…";
+        }
 
+        if (window.S369 && S369.syncCartWithServer) {
+          await S369.syncCartWithServer();
+        }
+        if (window.S369 && S369.syncWishlistWithServer) {
+          await S369.syncWishlistWithServer();
+        }
 
-        // Clear fields
-        document.getElementById("registerName").value = "";
-        document.getElementById("registerEmail").value = "";
-        document.getElementById("registerPassword").value = "";
+        var urlParams = new URLSearchParams(window.location.search);
+        var redirectUrl = urlParams.get("redirect") || (data.user && data.user.role === "admin" ? "admin.html" : "index.html");
 
+        setTimeout(function() {
+          window.location.href = redirectUrl;
+        }, 600);
 
-        // Switch to login after 1 second
-        setTimeout(() => {
+      } catch (err) {
+        console.error("Login error:", err);
+        if (feedback) {
+          feedback.className = "auth-feedback error";
+          feedback.textContent = err.message || "Cannot connect to server. Ensure backend is running.";
+        }
+      } finally {
+        window.setBtnLoading(submitBtn, false);
+      }
+    };
 
-            showForm("login");
+    window.handleRegister = async function(e) {
+      if (e) e.preventDefault();
+      var nameEl = document.getElementById("registerName");
+      var emailEl = document.getElementById("registerEmail");
+      var passEl = document.getElementById("registerPassword");
+      var termsEl = document.getElementById("registerTerms");
+      var feedback = document.getElementById("registerFeedback");
+      var submitBtn = document.getElementById("registerSubmitBtn");
 
-        }, 1000);
+      var name = (nameEl ? nameEl.value : "").trim();
+      var email = (emailEl ? emailEl.value : "").trim();
+      var password = passEl ? passEl.value : "";
+      var terms = termsEl ? termsEl.checked : false;
 
+      if (feedback) {
+        feedback.className = "auth-feedback";
+        feedback.innerHTML = "";
+      }
 
-    } catch (error) {
-
-        console.error("Register error:", error);
-
-        message.textContent =
-            "Cannot connect to server. Make sure the backend is running.";
-    }
-}
-
-
-// ======================================================
-// LOGIN
-// ======================================================
-
-async function login() {
-
-    const email =
-        document.getElementById("loginEmail").value.trim();
-
-    const password =
-        document.getElementById("loginPassword").value;
-
-    const message =
-        document.getElementById("loginMessage");
-
-
-    // Clear previous message
-    message.textContent = "";
-
-
-    // Validation
-    if (!email || !password) {
-
-        message.textContent =
-            "Please enter email and password.";
-
+      if (!name) {
+        if (feedback) {
+          feedback.className = "auth-feedback error";
+          feedback.textContent = "Please enter your full name.";
+        }
+        if (nameEl) nameEl.focus();
         return;
-    }
+      }
 
+      if (!email || !email.includes("@")) {
+        if (feedback) {
+          feedback.className = "auth-feedback error";
+          feedback.textContent = "Please enter a valid email address.";
+        }
+        if (emailEl) emailEl.focus();
+        return;
+      }
 
-    try {
+      if (!password || password.length < 6) {
+        if (feedback) {
+          feedback.className = "auth-feedback error";
+          feedback.textContent = "Password must be at least 6 characters long.";
+        }
+        if (passEl) passEl.focus();
+        return;
+      }
 
-        const response = await fetch(
-            `${API_BASE}/api/auth/login`,
-            {
-                method: "POST",
+      if (!terms) {
+        if (feedback) {
+          feedback.className = "auth-feedback error";
+          feedback.textContent = "Please accept the Terms & Policies to continue.";
+        }
+        return;
+      }
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+      window.setBtnLoading(submitBtn, true);
+      setTimeout(function() { window.setBtnLoading(submitBtn, false); }, 5000);
 
-                body: JSON.stringify({
-                    email: email,
-                    password: password
-                })
-            }
-        );
+      try {
+        var response = await fetch(`${window.API_BASE}/api/auth/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: window.CREDENTIALS_MODE,
+          body: JSON.stringify({ name: name, email: email, password: password })
+        });
 
-
-        const data = await response.json();
-
+        var data = await response.json();
 
         if (!response.ok) {
-
-            message.textContent =
-                data.message || "Login failed.";
-
+          if (data.message && data.message.toLowerCase().includes("already registered")) {
+            if (feedback) {
+              feedback.className = "auth-feedback error";
+              feedback.innerHTML = `This email is already registered. <button type="button" class="switch-toggle-btn" onclick="window.switchTab('login'); var le=document.getElementById('loginEmail'); if(le) le.value='${email}';">Click to Sign In</button>`;
+            }
             return;
+          }
+          throw new Error(data.message || "Registration failed.");
         }
 
+        if (data.token) localStorage.setItem("token", data.token);
+        if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
 
-        // Save login information
-        localStorage.setItem(
-            "token",
-            data.token
-        );
+        if (feedback) {
+          feedback.className = "auth-feedback success";
+          feedback.textContent = "Account created! Welcome to S369 Perfume.";
+        }
 
-        localStorage.setItem(
-            "user",
-            JSON.stringify(data.user)
-        );
+        if (window.S369 && S369.syncCartWithServer) {
+          await S369.syncCartWithServer();
+        }
+        if (window.S369 && S369.syncWishlistWithServer) {
+          await S369.syncWishlistWithServer();
+        }
 
+        var urlParams = new URLSearchParams(window.location.search);
+        var redirectUrl = urlParams.get("redirect") || "index.html";
 
-        message.textContent =
-            "Login successful!";
+        setTimeout(function() {
+          window.location.href = redirectUrl;
+        }, 700);
 
-
-        // Redirect to home page
-        setTimeout(() => {
-
-            window.location.href = "index.html";
-
-        }, 800);
-
-
-    } catch (error) {
-
-        console.error("Login error:", error);
-
-        message.textContent =
-            "Cannot connect to server. Make sure the backend is running.";
-    }
-}
-
-</script>
-
+      } catch (err) {
+        console.error("Register error:", err);
+        if (feedback) {
+          feedback.className = "auth-feedback error";
+          feedback.textContent = err.message || "Unable to complete registration. Please try again.";
+        }
+      } finally {
+        window.setBtnLoading(submitBtn, false);
+      }
+    };
+  </script>
 </body>
 </html>

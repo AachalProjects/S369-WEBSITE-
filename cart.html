@@ -3,534 +3,586 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Shopping Bag — S369 Perfume</title>
-
+    <meta name="theme-color" content="#5d1f2d" />
+    <title>Shopping Bag — S369 Perfume | Signature Eau de Parfum</title>
     <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" href="data:," />
 
     <style>
-      .cart-page {
+      .cart-page-wrap {
         max-width: 1100px;
-        margin: 40px auto;
-        padding: 0 20px 60px;
+        margin: 40px auto 80px;
+        padding: 0 24px;
+        min-height: 60vh;
       }
 
-      .cart-title {
-        margin-bottom: 25px;
-      }
-
-      .cart-item {
+      .cart-page-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        gap: 20px;
-        padding: 20px 0;
-        border-bottom: 1px solid #ddd;
+        align-items: baseline;
+        margin-bottom: 30px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
       }
 
-      .cart-item-info {
+      .cart-page-header h1 {
+        font-family: var(--serif, serif);
+        font-size: 32px;
+        color: var(--wine, #5d1f2d);
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .cart-page-header .bag-meta {
+        font-size: 14px;
+        color: #777;
+      }
+
+      /* SYNC NOTICE BANNER */
+      .auth-notice-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fbf8f3;
+        border: 1px solid #ebdccb;
+        border-radius: 8px;
+        padding: 12px 18px;
+        margin-bottom: 24px;
+        font-size: 13.5px;
+        color: #554433;
+      }
+
+      .auth-notice-banner a {
+        color: #5d1f2d;
+        font-weight: 600;
+        text-decoration: underline;
+        margin-left: 8px;
+      }
+
+      /* CART LAYOUT */
+      .cart-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 36px;
+        align-items: start;
+      }
+
+      .cart-items-column {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      /* CART ITEM CARD */
+      .cart-item-card {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        background: #ffffff;
+        border: 1px solid #ebe5dc;
+        border-radius: 12px;
+        padding: 18px 20px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .cart-item-card:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+        border-color: #dfd5c7;
+      }
+
+      .cart-item-media {
+        width: 84px;
+        height: 84px;
+        flex-shrink: 0;
+        border-radius: 8px;
+        background: #f9f6f0;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .cart-item-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+
+      .cart-item-card:hover .cart-item-media img {
+        transform: scale(1.05);
+      }
+
+      .cart-item-details {
         flex: 1;
+        min-width: 0;
       }
 
       .cart-item-name {
-        font-size: 18px;
+        font-size: 17px;
         font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 4px;
       }
 
-      .cart-item-size {
-        margin-top: 5px;
-        font-size: 14px;
-        opacity: 0.7;
+      .cart-item-name a {
+        color: inherit;
+        text-decoration: none;
       }
 
-      .cart-item-price {
-        margin-top: 8px;
+      .cart-item-name a:hover {
+        color: #5d1f2d;
+      }
+
+      .cart-item-tag {
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 8px;
+      }
+
+      .cart-item-size-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        background: #f4eee6;
+        border-radius: 4px;
+        font-size: 12px;
         font-weight: 600;
+        color: #5d1f2d;
+        letter-spacing: 0.3px;
       }
 
-      .qty-controls {
+      .cart-item-actions {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 24px;
       }
 
-      .qty-btn {
-        width: 34px;
-        height: 34px;
-        border: 1px solid #999;
-        background: white;
+      /* STEPPER */
+      .qty-stepper {
+        display: flex;
+        align-items: center;
+        background: #faf8f5;
+        border: 1px solid #dcd3c7;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .qty-step-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: transparent;
+        font-size: 16px;
+        font-weight: bold;
+        color: #444;
         cursor: pointer;
-        font-size: 18px;
-        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
       }
 
-      .qty-btn:hover {
-        background: #f2f2f2;
+      .qty-step-btn:hover:not(:disabled) {
+        background: #5d1f2d;
+        color: #fff;
       }
 
-      .qty-btn:disabled,
-      .remove-btn:disabled {
-        opacity: 0.5;
+      .qty-step-btn:disabled {
+        opacity: 0.4;
         cursor: not-allowed;
       }
 
-      .qty-value {
-        min-width: 25px;
+      .qty-display {
+        width: 36px;
         text-align: center;
-      }
-
-      .remove-btn {
-        border: none;
-        background: transparent;
-        color: #b00020;
-        cursor: pointer;
         font-size: 14px;
+        font-weight: 600;
+        color: #222;
       }
 
-      .cart-summary {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 2px solid #222;
+      .cart-item-price-block {
         text-align: right;
+        min-width: 90px;
       }
 
-      .cart-total {
-        font-size: 22px;
+      .cart-item-total {
+        font-size: 17px;
         font-weight: 700;
+        color: #1a1a1a;
       }
 
-      .checkout-btn {
-        display: inline-block;
-        margin-top: 15px;
-        padding: 12px 25px;
-        background: #111;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
+      .cart-item-unit {
+        font-size: 12px;
+        color: #888;
+        margin-top: 2px;
       }
 
-      .empty-cart {
+      .cart-item-remove {
+        background: none;
+        border: none;
+        color: #999;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 6px;
+        transition: color 0.2s ease;
+      }
+
+      .cart-item-remove:hover {
+        color: #b00020;
+      }
+
+      /* SUMMARY CARD */
+      .cart-summary-card {
+        background: #ffffff;
+        border: 1px solid #ebe5dc;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        position: sticky;
+        top: 90px;
+      }
+
+      .cart-summary-card h2 {
+        font-family: var(--serif, serif);
+        font-size: 20px;
+        color: #1a1a1a;
+        margin-bottom: 20px;
+        font-weight: 500;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        font-size: 14px;
+        color: #555;
+        border-bottom: 1px dashed #eee;
+      }
+
+      .summary-row.total-row {
+        border-bottom: none;
+        border-top: 2px solid #222;
+        margin-top: 14px;
+        padding-top: 16px;
+        font-size: 18px;
+        font-weight: 700;
+        color: #1a1a1a;
+      }
+
+      .summary-row .free-tag {
+        color: #1b5e20;
+        font-weight: 600;
+      }
+
+      .cart-checkout-btn {
+        display: block;
+        width: 100%;
         text-align: center;
-        padding: 60px 20px;
-      }
-
-      .login-required {
-        text-align: center;
-        padding: 60px 20px;
-      }
-
-      .login-btn {
-        display: inline-block;
-        margin-top: 15px;
-        padding: 12px 25px;
-        background: #111;
-        color: white;
+        margin-top: 20px;
+        padding: 14px;
+        background: #5d1f2d;
+        color: #ffffff;
         text-decoration: none;
-        border-radius: 4px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(93, 31, 45, 0.2);
       }
 
-      @media (max-width: 700px) {
-        .cart-item {
-          flex-wrap: wrap;
+      .cart-checkout-btn:hover {
+        background: #7c2e3f;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(93, 31, 45, 0.3);
+      }
+
+      .cart-guarantees {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid #f0eae1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        font-size: 12.5px;
+        color: #777;
+      }
+
+      .cart-guarantees span {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* EMPTY CART VIEW */
+      .empty-cart-container {
+        text-align: center;
+        padding: 80px 20px;
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #ebe5dc;
+        max-width: 580px;
+        margin: 40px auto;
+      }
+
+      .empty-cart-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.6;
+      }
+
+      .empty-cart-container h2 {
+        font-family: var(--serif, serif);
+        font-size: 26px;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .empty-cart-container p {
+        color: #777;
+        font-size: 14.5px;
+        margin-bottom: 24px;
+      }
+
+      .btn-explore {
+        display: inline-block;
+        padding: 13px 28px;
+        background: #5d1f2d;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-explore:hover {
+        background: #7c2e3f;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 860px) {
+        .cart-layout {
+          grid-template-columns: 1fr;
         }
+        .cart-summary-card {
+          position: static;
+        }
+      }
 
-        .cart-item-info {
+      @media (max-width: 580px) {
+        .cart-item-card {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 14px;
+        }
+        .cart-item-actions {
           width: 100%;
-          flex-basis: 100%;
-        }
-
-        .qty-controls {
-          margin-right: auto;
+          justify-content: space-between;
         }
       }
     </style>
   </head>
 
   <body>
-    <div id="siteHeader"></div>
+    <!-- S369 HEADER -->
+    <div data-header></div>
 
-    <main class="cart-page">
-      <h1 class="cart-title">Shopping Bag</h1>
-
-      <!-- LOGIN REQUIRED -->
-      <div id="loginRequired" class="login-required" style="display: none">
-        <h2>Please Login</h2>
-        <p>Please login to view your shopping bag.</p>
-
-        <a href="login.html" class="login-btn"> Login / Register </a>
+    <main class="cart-page-wrap">
+      <div class="cart-page-header">
+        <h1>Your Shopping Bag</h1>
+        <div class="bag-meta" id="bagMeta">Reviewing selections</div>
       </div>
 
-      <!-- CART -->
-      <div id="cartContent" style="display: none">
-        <div id="cartList"></div>
+      <!-- AUTH NOTIFICATION (IF GUEST) -->
+      <div id="authNoticeBanner" class="auth-notice-banner" style="display: none;">
+        <span>💡 Sign in to sync your bag across devices and earn loyalty rewards.</span>
+        <a href="login.html?redirect=cart.html">Sign In / Register →</a>
+      </div>
 
-        <!-- EMPTY CART -->
-        <div id="emptyCart" class="empty-cart" style="display: none">
-          <h2>Your shopping bag is empty</h2>
-          <p>Add some perfumes to your bag.</p>
-
-          <a href="shop.html" class="checkout-btn"> Continue Shopping </a>
-        </div>
-
-        <!-- CART SUMMARY -->
-        <div id="cartSummary" class="cart-summary" style="display: none">
-          <div class="cart-total">
-            Total:
-            <span id="cartTotal">₹0</span>
+      <!-- MAIN CART DISPLAY -->
+      <div id="cartLoadedView">
+        <div class="cart-layout">
+          <!-- ITEMS LIST -->
+          <div class="cart-items-column" id="cartItemList">
+            <div style="padding: 40px; text-align: center; color: #777;">Loading your bag…</div>
           </div>
 
-          <a href="checkout.html" class="checkout-btn"> Proceed to Checkout </a>
+          <!-- SUMMARY SIDEBAR -->
+          <aside class="cart-summary-card" id="cartSummaryBlock">
+            <h2>Order Summary</h2>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <strong id="summarySubtotal">₹0</strong>
+            </div>
+            <div class="summary-row">
+              <span>Standard Shipping</span>
+              <span class="free-tag">FREE</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Estimated Total</span>
+              <strong id="summaryGrandTotal">₹0</strong>
+            </div>
+
+            <a href="checkout.html" class="cart-checkout-btn">
+              Proceed to Checkout →
+            </a>
+
+            <div class="cart-guarantees">
+              <span>🛡️ 100% Authentic S369 Eau de Parfum</span>
+              <span>🚚 Free Express Shipping across India</span>
+              <span>🔒 100% Secure 256-Bit SSL Encrypted Razorpay Checkout</span>
+            </div>
+          </aside>
         </div>
+      </div>
+
+      <!-- EMPTY CART VIEW -->
+      <div id="emptyCartView" class="empty-cart-container" style="display: none;">
+        <div class="empty-cart-icon">🛍️</div>
+        <h2>Your bag is currently empty</h2>
+        <p>Explore our six signature Eau de Parfum creations and find a scent that stays.</p>
+        <a href="shop.html" class="btn-explore">Discover Fragrances</a>
       </div>
     </main>
 
-    <div id="siteFooter"></div>
+    <!-- S369 FOOTER -->
+    <div data-footer></div>
 
-    <!-- S369 JAVASCRIPT -->
+    <!-- SCRIPTS -->
     <script src="assets/js/config.js"></script>
     <script src="assets/js/products.js"></script>
     <script src="assets/js/store.js"></script>
 
-    <!-- CART PAGE JAVASCRIPT -->
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
-        // ==================================================
-        // LOGIN CHECK
-        // ==================================================
+        // Initialize Global Site Chrome
+        S369.globalChrome("cart");
 
-        const token = localStorage.getItem("token");
-
-        const loginRequired = document.getElementById("loginRequired");
-
-        const cartContent = document.getElementById("cartContent");
-
-        if (!token) {
-          loginRequired.style.display = "block";
-          cartContent.style.display = "none";
-          return;
+        // Check if user is logged in
+        const user = await S369.checkAuthSession();
+        const authBanner = document.getElementById("authNoticeBanner");
+        if (!user && authBanner) {
+          authBanner.style.display = "flex";
         }
 
-        loginRequired.style.display = "none";
-        cartContent.style.display = "block";
+        // Load products and pricing from MongoDB Atlas DB
+        await S369.loadProductsFromApi();
 
-        // ==================================================
-        // LOAD CART
-        // ==================================================
+        // Load cart from MongoDB / server
+        await S369.loadCartFromServer();
 
-        try {
-          const success = await S369.loadCartFromServer();
+        // Render Bag
+        renderCart();
 
-          if (!success) {
-            console.error("Unable to load cart from server.");
-          }
-        } catch (error) {
-          console.error("Cart loading error:", error);
-        }
+        // Listen for external cart changes
+        window.addEventListener("s369-cart", renderCart);
 
-        renderCartPage();
-
-        // ==================================================
-        // RENDER CART
-        // ==================================================
-
-        function renderCartPage() {
+        function renderCart() {
           const cart = S369.getCart();
-
-          const cartList = document.getElementById("cartList");
-
-          const emptyCart = document.getElementById("emptyCart");
-
-          const cartSummary = document.getElementById("cartSummary");
-
-          const cartTotal = document.getElementById("cartTotal");
-
-          cartList.innerHTML = "";
-
-          // ==================================================
-          // EMPTY CART
-          // ==================================================
+          const loadedView = document.getElementById("cartLoadedView");
+          const emptyView = document.getElementById("emptyCartView");
+          const list = document.getElementById("cartItemList");
+          const bagMeta = document.getElementById("bagMeta");
+          const subtotalEl = document.getElementById("summarySubtotal");
+          const grandTotalEl = document.getElementById("summaryGrandTotal");
 
           if (!cart || cart.length === 0) {
-            emptyCart.style.display = "block";
-            cartSummary.style.display = "none";
-
+            loadedView.style.display = "none";
+            emptyView.style.display = "block";
+            bagMeta.textContent = "0 items";
             return;
           }
 
-          emptyCart.style.display = "none";
-          cartSummary.style.display = "block";
+          loadedView.style.display = "block";
+          emptyView.style.display = "none";
 
-          // ==================================================
-          // CART ITEMS
-          // ==================================================
+          const totalItems = cart.reduce((sum, item) => sum + Number(item.qty || 1), 0);
+          bagMeta.textContent = `${totalItems} ${totalItems === 1 ? 'item' : 'items'}`;
 
-          cart.forEach((item, index) => {
+          list.innerHTML = cart.map((item, index) => {
             const product = S369.productById(item.id);
+            const pName = product ? product.name : (item.id || "Perfume");
+            const pImage = product ? S369.productImageSrc(product) : "assets/images/hero.jpg";
+            const pTag = product ? product.tagline : "Signature Eau de Parfum";
+            const unitPrice = product?.prices?.[item.size]?.price ?? product?.price ?? S369.SIZES[item.size]?.price ?? 399;
+            const linePrice = unitPrice * (item.qty || 1);
 
-            if (!product) {
-              console.error("Product not found:", item.id);
-              return;
-            }
-
-            const sizeConfig = S369.SIZES[item.size];
-
-            if (!sizeConfig) {
-              console.error("Size configuration not found:", item.size);
-
-              return;
-            }
-
-            const quantity = Number(item.qty) || 1;
-
-            const price = Number(sizeConfig.price) || 0;
-
-            const itemTotal = price * quantity;
-
-            const div = document.createElement("div");
-
-            div.className = "cart-item";
-
-            div.innerHTML = `
-              <div class="cart-item-info">
-
-                <div class="cart-item-name">
-                  ${product.name}
+            return `
+              <div class="cart-item-card" data-index="${index}">
+                <div class="cart-item-media">
+                  <a href="product.html?id=${item.id}">
+                    <img src="${pImage}" alt="${pName}">
+                  </a>
                 </div>
 
-                <div class="cart-item-size">
-                  Size: ${item.size}
+                <div class="cart-item-details">
+                  <div class="cart-item-name">
+                    <a href="product.html?id=${item.id}">${pName}</a>
+                  </div>
+                  <div class="cart-item-tag">${pTag}</div>
+                  <span class="cart-item-size-badge">${item.size} · Eau de Parfum</span>
                 </div>
 
-                <div class="cart-item-price">
-                  ₹${itemTotal.toLocaleString("en-IN")}
-                </div>
+                <div class="cart-item-actions">
+                  <div class="qty-stepper">
+                    <button type="button" class="qty-step-btn" onclick="modifyQty(${index}, -1)" ${item.qty <= 1 ? '' : ''}>−</button>
+                    <span class="qty-display">${item.qty}</span>
+                    <button type="button" class="qty-step-btn" onclick="modifyQty(${index}, 1)">+</button>
+                  </div>
 
+                  <div class="cart-item-price-block">
+                    <div class="cart-item-total">${S369.fmt(linePrice)}</div>
+                    <div class="cart-item-unit">${S369.fmt(unitPrice)} each</div>
+                  </div>
+
+                  <button type="button" class="cart-item-remove" onclick="removeItem(${index})" title="Remove ${pName}">
+                    ✕
+                  </button>
+                </div>
               </div>
-
-
-              <div class="qty-controls">
-
-                <button
-                  type="button"
-                  class="qty-btn"
-                  data-minus="${index}">
-                  −
-                </button>
-
-
-                <span class="qty-value">
-                  ${quantity}
-                </span>
-
-
-                <button
-                  type="button"
-                  class="qty-btn"
-                  data-plus="${index}">
-                  +
-                </button>
-
-              </div>
-
-
-              <button
-                type="button"
-                class="remove-btn"
-                data-remove="${index}">
-                Remove
-              </button>
             `;
-
-            cartList.appendChild(div);
-          });
-
-          // ==================================================
-          // TOTAL
-          // ==================================================
+          }).join("");
 
           const subtotal = S369.cartSubtotal();
-
-          cartTotal.textContent =
-            "₹" + Number(subtotal).toLocaleString("en-IN");
-
-          // Attach buttons
-          attachCartEvents();
+          subtotalEl.textContent = S369.fmt(subtotal);
+          grandTotalEl.textContent = S369.fmt(subtotal);
         }
 
-        // ==================================================
-        // CART BUTTON EVENTS
-        // ==================================================
+        // Stepper Quantity Handler
+        window.modifyQty = async (index, delta) => {
+          const cart = S369.getCart();
+          const item = cart[index];
+          if (!item) return;
 
-        function attachCartEvents() {
-          // ==================================================
-          // PLUS
-          // ==================================================
+          const newQty = Number(item.qty || 1) + delta;
+          if (newQty <= 0) {
+            await window.removeItem(index);
+            return;
+          }
 
-          document.querySelectorAll("[data-plus]").forEach((button) => {
-            button.addEventListener("click", async () => {
-              const index = Number(button.dataset.plus);
+          await S369.updateCartItemOnServer(item.id, item.size, newQty);
+          renderCart();
+        };
 
-              const cart = S369.getCart();
+        // Remove Item Handler
+        window.removeItem = async (index) => {
+          const cart = S369.getCart();
+          const item = cart[index];
+          if (!item) return;
 
-              const item = cart[index];
+          const card = document.querySelector(`.cart-item-card[data-index="${index}"]`);
+          if (card) {
+            card.style.opacity = "0.4";
+            card.style.transform = "translateX(20px)";
+          }
 
-              if (!item) {
-                return;
-              }
-
-              const newQuantity = Number(item.qty) + 1;
-
-              button.disabled = true;
-
-              try {
-                console.log(
-                  "Updating quantity:",
-                  item.id,
-                  item.size,
-                  newQuantity,
-                );
-
-                const success = await S369.updateCartItemOnServer(
-                  item.id,
-                  item.size,
-                  newQuantity,
-                );
-
-                if (!success) {
-                  alert("Unable to update quantity.");
-
-                  button.disabled = false;
-
-                  return;
-                }
-
-                await S369.loadCartFromServer();
-
-                renderCartPage();
-              } catch (error) {
-                console.error("Quantity update error:", error);
-
-                alert("Unable to update quantity.");
-
-                button.disabled = false;
-              }
-            });
-          });
-
-          // ==================================================
-          // MINUS
-          // ==================================================
-
-          document.querySelectorAll("[data-minus]").forEach((button) => {
-            button.addEventListener("click", async () => {
-              const index = Number(button.dataset.minus);
-
-              const cart = S369.getCart();
-
-              const item = cart[index];
-
-              if (!item) {
-                return;
-              }
-
-              const currentQuantity = Number(item.qty);
-
-              button.disabled = true;
-
-              try {
-                let success = false;
-
-                // ----------------------------------------
-                // QUANTITY > 1
-                // ----------------------------------------
-
-                if (currentQuantity > 1) {
-                  success = await S369.updateCartItemOnServer(
-                    item.id,
-                    item.size,
-                    currentQuantity - 1,
-                  );
-                }
-
-                // ----------------------------------------
-                // QUANTITY = 1
-                // REMOVE ITEM
-                // ----------------------------------------
-                else {
-                  success = await S369.removeCartItemFromServer(
-                    item.id,
-                    item.size,
-                  );
-                }
-
-                if (!success) {
-                  alert("Unable to update quantity.");
-
-                  button.disabled = false;
-
-                  return;
-                }
-
-                await S369.loadCartFromServer();
-
-                renderCartPage();
-              } catch (error) {
-                console.error("Quantity decrease error:", error);
-
-                alert("Unable to update quantity.");
-
-                button.disabled = false;
-              }
-            });
-          });
-
-          // ==================================================
-          // REMOVE
-          // ==================================================
-
-          document.querySelectorAll("[data-remove]").forEach((button) => {
-            button.addEventListener("click", async () => {
-              const index = Number(button.dataset.remove);
-
-              const cart = S369.getCart();
-
-              const item = cart[index];
-
-              if (!item) {
-                return;
-              }
-
-              button.disabled = true;
-
-              try {
-                console.log("Removing item:", item.id, item.size);
-
-                const success = await S369.removeCartItemFromServer(
-                  item.id,
-                  item.size,
-                );
-
-                if (!success) {
-                  alert("Unable to remove item.");
-
-                  button.disabled = false;
-
-                  return;
-                }
-
-                await S369.loadCartFromServer();
-
-                renderCartPage();
-              } catch (error) {
-                console.error("Remove item error:", error);
-
-                alert("Unable to remove item.");
-
-                button.disabled = false;
-              }
-            });
-          });
-        }
+          await S369.removeCartItemFromServer(item.id, item.size);
+          renderCart();
+        };
       });
     </script>
   </body>

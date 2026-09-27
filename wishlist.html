@@ -1,1 +1,750 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#5d1f2d"><link rel="stylesheet" href="assets/css/styles.css"><link rel="icon" href="data:,"><title>Wishlist | S369 Perfume</title><meta name="description" content="S369 Perfume — signature Eau de Parfum in 30ml, 50ml and 100ml."></head><body><div data-header></div><main class="page-wrap"><section class="page-hero"><p class="eyebrow">YOUR EDIT</p><h1>Wishlist</h1><p>Save the fragrances you want to return to.</p></section><section class="section"><div class="product-grid" id="wishGrid"></div></section></main><div data-footer></div><script src="assets/js/config.js"></script><script src="assets/js/products.js"></script><script src="assets/js/store.js"></script><script>S369.globalChrome('');function drawWish(){let ids=S369.getWishlist(),a=S369.PRODUCTS.filter(p=>ids.includes(p.id));if(!a.length){wishGrid.innerHTML='<div class="empty-state"><h3>Your wishlist is empty.</h3><p>Save fragrances from the collection to see them here.</p><a class="btn btn-dark" href="shop.html">Explore collection</a></div>';return}S369.renderShopGrid(wishGrid,a)}window.addEventListener('s369-wishlist',drawWish);drawWish();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#5d1f2d">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:,">
+  <title>My Wishlist | S369 Perfume Haute Parfumerie</title>
+  <meta name="description" content="View and manage your saved S369 signature fragrances, price drop alerts, and back-in-stock notifications.">
+
+  <style>
+    .wishlist-page-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    .wishlist-hero {
+      text-align: center;
+      margin-bottom: 35px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .wishlist-hero h1 {
+      font-size: 36px;
+      font-family: var(--font-serif);
+      color: var(--wine);
+      margin: 0 0 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .wishlist-hero p {
+      color: #666;
+      font-size: 15px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* CLOUD SYNC BAR */
+    .sync-status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: #faf7f2;
+      border: 1px solid #ebdccb;
+      border-radius: 8px;
+      padding: 12px 18px;
+      margin-bottom: 30px;
+      font-size: 13.5px;
+    }
+
+    .sync-status-bar .sync-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #4a3b32;
+    }
+
+    .sync-status-bar .sync-info svg {
+      color: var(--wine);
+      flex-shrink: 0;
+    }
+
+    .sync-status-bar .sync-actions a {
+      color: var(--wine);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    /* WISHLIST GRID */
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .wishlist-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .wishlist-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(93, 31, 45, 0.08);
+      border-color: #d8c5bc;
+    }
+
+    .card-top {
+      display: flex;
+      gap: 16px;
+      padding: 18px;
+      border-bottom: 1px solid #f2ece4;
+    }
+
+    .card-media {
+      width: 100px;
+      height: 120px;
+      border-radius: 8px;
+      background: #fbf9f6;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-media img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
+    .wishlist-card:hover .card-media img {
+      transform: scale(1.05);
+    }
+
+    .card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-title-group h2 {
+      font-size: 19px;
+      font-family: var(--font-serif);
+      margin: 0 0 4px;
+      color: var(--text);
+    }
+
+    .card-title-group h2 a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .card-title-group h2 a:hover {
+      color: var(--wine);
+    }
+
+    .card-scent-tag {
+      font-size: 12.5px;
+      color: #666;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .stock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #1b5e20;
+      background: #e8f5e9;
+      padding: 3px 8px;
+      border-radius: 12px;
+      width: fit-content;
+    }
+
+    /* SIZE & PRICING ROW */
+    .card-pricing-row {
+      padding: 14px 18px;
+      background: #faf8f5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid #f2ece4;
+    }
+
+    .size-selector-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .size-selector-wrap label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .size-selector-wrap select {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #d4c5b9;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .price-display {
+      text-align: right;
+    }
+
+    .current-price {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--wine);
+    }
+
+    .mrp-strike {
+      font-size: 12px;
+      color: #888;
+      text-decoration: line-through;
+      margin-left: 4px;
+    }
+
+    .discount-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #b00020;
+      margin-left: 4px;
+    }
+
+    /* NOTIFICATION & ALERTS SECTION */
+    .card-alerts {
+      padding: 12px 18px;
+      background: #ffffff;
+      border-bottom: 1px solid #f2ece4;
+      font-size: 12.5px;
+      color: #555;
+    }
+
+    .alert-header {
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-size: 11px;
+    }
+
+    .alert-toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .alert-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 12.5px;
+      color: #444;
+    }
+
+    .alert-checkbox-label input[type="checkbox"] {
+      accent-color: var(--wine);
+      cursor: pointer;
+      width: 15px;
+      height: 15px;
+    }
+
+    /* CARD ACTION BUTTONS */
+    .card-actions {
+      padding: 14px 18px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .btn-add-bag {
+      flex: 2;
+      background: var(--wine);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(93, 31, 45, 0.2);
+    }
+
+    .btn-add-bag:hover {
+      background: #7a263a;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(93, 31, 45, 0.3);
+    }
+
+    .btn-remove-wish {
+      flex: 1;
+      background: #ffffff;
+      color: #666;
+      border: 1px solid #d4c5b9;
+      border-radius: 6px;
+      padding: 12px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-remove-wish:hover {
+      background: #fdf2f2;
+      color: #b00020;
+      border-color: #f1b0b7;
+    }
+
+    /* EMPTY STATE */
+    .wishlist-empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      background: #ffffff;
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .empty-heart-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      color: #d1b8b8;
+    }
+
+    .wishlist-empty-state h3 {
+      font-family: var(--font-serif);
+      font-size: 26px;
+      color: var(--wine);
+      margin: 0 0 10px;
+    }
+
+    .wishlist-empty-state p {
+      color: #666;
+      font-size: 15px;
+      line-height: 1.5;
+      margin: 0 auto 26px;
+      max-width: 440px;
+    }
+
+    .btn-explore {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--wine);
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 14.5px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(93, 31, 45, 0.25);
+    }
+
+    .btn-explore:hover {
+      background: #7a263a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(93, 31, 45, 0.35);
+    }
+
+    /* VALUE PROPOSITION BADGES */
+    .wishlist-features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .feature-card {
+      text-align: center;
+      padding: 22px 18px;
+      background: #fbf9f6;
+      border-radius: 10px;
+      border: 1px solid #efe5db;
+    }
+
+    .feature-card svg {
+      width: 32px;
+      height: 32px;
+      color: var(--wine);
+      margin-bottom: 10px;
+    }
+
+    .feature-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0 0 6px;
+      color: #222;
+    }
+
+    .feature-card p {
+      font-size: 13px;
+      color: #666;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 600px) {
+      .wishlist-grid {
+        grid-template-columns: 1fr;
+      }
+      .card-pricing-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .price-display {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <div data-header></div>
+
+  <!-- MAIN WRAPPER -->
+  <main class="page-wrap">
+    <div class="wishlist-page-wrap">
+      
+      <!-- HERO -->
+      <section class="wishlist-hero">
+        <p class="eyebrow">SAVED FRAGRANCES</p>
+        <h1>My Wishlist</h1>
+        <p>Your curated edit of signature Eau de Parfums with automatic price-drop monitoring, restock alerts, and 1-click cart addition.</p>
+      </section>
+
+      <!-- CLOUD & CACHE STATUS BAR -->
+      <div class="sync-status-bar" id="syncStatusBar">
+        <div class="sync-info">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+          </svg>
+          <span id="syncStatusText">Checking cloud synchronization…</span>
+        </div>
+        <div class="sync-actions" id="syncActionWrap"></div>
+      </div>
+
+      <!-- WISHLIST CARDS CONTAINER -->
+      <div id="wishlistContainer">
+        <!-- Rendered by JavaScript -->
+      </div>
+
+      <!-- VALUE FEATURES -->
+      <section class="wishlist-features-grid">
+        <div class="feature-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <h4>Price Drop Alerts</h4>
+          <p>Get notified directly on your registered email whenever your saved scents go on promotional discount.</p>
+        </div>
+        <div class="feature-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <h4>Back In Stock Tracking</h4>
+          <p>Hand-crafted in limited seasonal batches. We reserve your notification priority when rare bottles restock.</p>
+        </div>
+        <div class="feature-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          <h4>Multi-Device Cloud Sync</h4>
+          <p>Items saved on your phone instantly sync to your laptop and tablet via MongoDB Atlas Cloud.</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <div data-footer></div>
+
+  <!-- SCRIPTS -->
+  <script src="assets/js/config.js?v=2.2"></script>
+  <script src="assets/js/products.js?v=2.2"></script>
+  <script src="assets/js/store.js?v=2.2"></script>
+
+  <script>
+    // Initialize Chrome
+    try {
+      S369.globalChrome("wishlist");
+    } catch(e) {
+      console.warn("Global chrome error:", e);
+    }
+
+    // Pricing tiers definition
+    const SIZES = (window.S369_CONFIG && window.S369_CONFIG.sizes) || {
+      "30ml": { price: 399, mrp: 799 },
+      "50ml": { price: 899, mrp: 1599 },
+      "100ml": { price: 1499, mrp: 2999 }
+    };
+
+    // Render Wishlist Page
+    async function renderWishlist() {
+      const container = document.getElementById("wishlistContainer");
+      const statusText = document.getElementById("syncStatusText");
+      const actionWrap = document.getElementById("syncActionWrap");
+      if (!container) return;
+
+      const token = S369.getToken ? S369.getToken() : localStorage.getItem("token");
+      let user = S369.getUser ? S369.getUser() : null;
+      if (!user && token && S369.checkAuthSession) {
+        user = await S369.checkAuthSession();
+      }
+
+      // Cloud status display (both registered users & guest sessions in MongoDB Atlas Cloud)
+      if (token && user) {
+        if (statusText) statusText.innerHTML = `<strong>Connected:</strong> Wishlist synchronized with <strong>${user.name}</strong> in MongoDB Atlas Cloud.`;
+        if (actionWrap) actionWrap.innerHTML = `<span style="color:#1b5e20; font-weight:700;">● Cloud Active</span>`;
+      } else {
+        const guestId = S369.getGuestId ? S369.getGuestId() : "";
+        if (statusText) statusText.innerHTML = `<strong>Cloud Synchronized:</strong> Saved in MongoDB Atlas Cloud under guest ID <code>${guestId.substring(0, 12)}…</code>.`;
+        if (actionWrap) actionWrap.innerHTML = `<a href="login.html?redirect=wishlist.html" style="color:var(--wine); font-weight:700; text-decoration:underline;">Link to Account →</a>`;
+      }
+
+      let allProducts = S369.loadProductsFromApi ? await S369.loadProductsFromApi() : [];
+      if (!allProducts || !allProducts.length) {
+        allProducts = (window.S369_PRODUCTS && window.S369_PRODUCTS.length) ? window.S369_PRODUCTS : (S369.PRODUCTS || []);
+      }
+
+      // Always load latest wishlist items from server / cache
+      if (S369.loadWishlistFromServer && !window._wishlistLoadedOnce) {
+        window._wishlistLoadedOnce = true;
+        await S369.loadWishlistFromServer();
+      }
+
+      const items = S369.getWishlist ? S369.getWishlist() : JSON.parse(localStorage.getItem("s369_wishlist") || "[]");
+
+      if (!items || items.length === 0) {
+        container.innerHTML = `
+          <div class="wishlist-empty-state" style="text-align: center; padding: 60px 20px; background: #ffffff; border: 1px solid #ebdccb; border-radius: 12px; margin-top: 10px;">
+            <svg class="empty-heart-icon" viewBox="0 0 24 24" fill="none" stroke="#5d1f2d" stroke-width="1.5" style="width: 56px; height: 56px; margin-bottom: 16px;">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            <h3 style="font-size: 24px; color: #5d1f2d; font-family: var(--font-serif); margin: 0 0 8px;">Your Wishlist is Empty</h3>
+            <p style="color: #666; font-size: 15px; max-width: 500px; margin: 0 auto 24px; line-height: 1.5;">You haven't saved any signature fragrances yet. Browse our bespoke Eau de Parfum collection and click the heart icon on any bottle to curate your wishlist.</p>
+            <a href="shop.html" class="btn btn-dark" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+              <span>Explore S369 Fragrances</span> →
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      let html = `<div class="wishlist-grid">`;
+
+      items.forEach((item) => {
+        const pId = String(item.productId || item.id || "");
+        const p = allProducts.find(prod => String(prod.id) === pId) 
+               || (window.S369_PRODUCTS || []).find(prod => String(prod.id) === pId);
+        if (!p) return;
+
+        const defaultSize = "30ml";
+        const pricing = p.prices?.[defaultSize] || SIZES[defaultSize] || { price: 399, mrp: 799 };
+        const discountPct = Math.round(((pricing.mrp - pricing.price) / pricing.mrp) * 100);
+
+        html += `
+          <article class="wishlist-card" id="wishcard-${p.id}">
+            
+            <div class="card-top">
+              <a href="product.html?id=${p.id}" class="card-media">
+                <img src="${S369.productImageSrc ? S369.productImageSrc(p) : 'assets/images/products/' + p.image}" alt="${p.name}" loading="lazy" referrerpolicy="no-referrer">
+              </a>
+              <div class="card-body">
+                <div class="card-title-group">
+                  <h2><a href="product.html?id=${p.id}">${p.name}</a></h2>
+                  <div class="card-scent-tag">
+                    ${p.scentFamily ? `<strong>${p.scentFamily}</strong> · ` : ""}${p.tagline}
+                  </div>
+                </div>
+                <div class="stock-badge">
+                  ● In Stock & Ready to Ship
+                </div>
+              </div>
+            </div>
+
+            <!-- PRICING & SIZE ROW -->
+            <div class="card-pricing-row">
+              <div class="size-selector-wrap">
+                <label for="size-${p.id}">Size:</label>
+                <select id="size-${p.id}" onchange="handleWishSizeChange('${p.id}', this.value)">
+                  <option value="30ml" selected>30ml</option>
+                  <option value="50ml">50ml</option>
+                  <option value="100ml">100ml</option>
+                </select>
+              </div>
+              <div class="price-display">
+                <span class="current-price" id="price-${p.id}">₹${pricing.price.toLocaleString("en-IN")}</span>
+                <span class="mrp-strike" id="mrp-${p.id}">₹${pricing.mrp.toLocaleString("en-IN")}</span>
+                <span class="discount-badge" id="discount-${p.id}">${discountPct}% OFF</span>
+              </div>
+            </div>
+
+            <!-- PRICE DROP & RESTOCK NOTIFICATIONS -->
+            <div class="card-alerts">
+              <div class="alert-header">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                Alerts & Notifications
+              </div>
+              <div class="alert-toggles">
+                <label class="alert-checkbox-label">
+                  <input type="checkbox" id="notif-price-${p.id}" ${item.notifyPriceDrop !== false ? "checked" : ""} onchange="handleNotificationChange('${p.id}')">
+                  <span>Price Drop Alert</span>
+                </label>
+                <label class="alert-checkbox-label">
+                  <input type="checkbox" id="notif-stock-${p.id}" ${item.notifyBackInStock !== false ? "checked" : ""} onchange="handleNotificationChange('${p.id}')">
+                  <span>Back in Stock Alert</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- ACTION BUTTONS: ADD TO CART & REMOVE -->
+            <div class="card-actions">
+              <button type="button" class="btn-add-bag" onclick="handleWishAddToCart('${p.id}')" aria-label="Add ${p.name} to cart">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+
+              <button type="button" class="btn-remove-wish" onclick="handleWishRemove('${p.id}')" aria-label="Remove ${p.name} from wishlist">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span>Remove</span>
+              </button>
+            </div>
+
+          </article>
+        `;
+      });
+
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    // Reactive Size Change
+    window.handleWishSizeChange = function(pId, size) {
+      const allProducts = (window.S369_PRODUCTS && window.S369_PRODUCTS.length) ? window.S369_PRODUCTS : (S369.PRODUCTS || []);
+      const p = allProducts.find(x => String(x.id) === String(pId));
+      const pricing = p?.prices?.[size] || { price: p?.price || 399, mrp: (p?.price ? p.price * 2 : 799) } || SIZES[size];
+      const priceEl = document.getElementById(`price-${pId}`);
+      const mrpEl = document.getElementById(`mrp-${pId}`);
+      const discountEl = document.getElementById(`discount-${pId}`);
+
+      if (priceEl) priceEl.textContent = `₹${pricing.price.toLocaleString("en-IN")}`;
+      if (mrpEl) mrpEl.textContent = `₹${pricing.mrp.toLocaleString("en-IN")}`;
+      if (discountEl) {
+        const pct = Math.round(((pricing.mrp - pricing.price) / pricing.mrp) * 100);
+        discountEl.textContent = `${pct}% OFF`;
+      }
+    };
+
+    // Add to Cart from Wishlist
+    window.handleWishAddToCart = async function(pId) {
+      const select = document.getElementById(`size-${pId}`);
+      const size = select ? select.value : "30ml";
+      
+      const success = await S369.addCartToServer(pId, size, 1);
+      if (success !== false) {
+        const allProducts = (window.S369_PRODUCTS && window.S369_PRODUCTS.length) ? window.S369_PRODUCTS : (S369.PRODUCTS || []);
+        const prod = allProducts.find(p => p.id === pId);
+        const name = prod ? prod.name : "Fragrance";
+        S369.toast(`${name} (${size}) added to your shopping bag! 🛍️`);
+      }
+    };
+
+    // Remove from Wishlist
+    window.handleWishRemove = async function(pId) {
+      const card = document.getElementById(`wishcard-${pId}`);
+      if (card) {
+        card.style.opacity = "0.4";
+        card.style.transform = "scale(0.96)";
+        card.style.transition = "all 0.25s ease";
+      }
+
+      await S369.removeFromWishlist(pId);
+      renderWishlist();
+    };
+
+    // Update Notification Preferences (Price drop / Back in stock)
+    window.handleNotificationChange = async function(pId) {
+      const priceDropEl = document.getElementById(`notif-price-${pId}`);
+      const stockEl = document.getElementById(`notif-stock-${pId}`);
+
+      const notifyPriceDrop = priceDropEl ? priceDropEl.checked : true;
+      const notifyBackInStock = stockEl ? stockEl.checked : true;
+
+      await S369.updateWishlistNotification(pId, { notifyPriceDrop, notifyBackInStock });
+      S369.toast("Alert preferences saved! 🔔");
+    };
+
+    // Listen to wishlist & storage updates
+    window.addEventListener("s369-wishlist", renderWishlist);
+    window.addEventListener("storage", (e) => {
+      if (e.key === "s369_wishlist") renderWishlist();
+    });
+
+    // Execute immediately on script load
+    renderWishlist();
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", renderWishlist);
+    }
+  </script>
+</body>
+</html>

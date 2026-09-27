@@ -41,8 +41,9 @@
               <button class="add-main" id="pAdd" style="flex: 1;">Add to bag</button>
               <button class="btn btn-dark" id="pBuyNow" style="flex: 1; padding: 14px; background: #5d1f2d; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">⚡ Buy Now</button>
             </div>
-            <button class="btn btn-outline-dark btn-full" id="pWish" style="margin-top: 15px;">
-              ♡ Save to wishlist
+            <button class="btn btn-outline-dark btn-full" id="pWish" style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; transition: all 0.2s ease;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              <span>Add to Wishlist</span>
             </button>
             <div class="notes-accordion">
               <details open>
@@ -56,11 +57,75 @@
               <details>
                 <summary>Ordering & payment <span>+</span></summary>
                 <div class="detail-body">
-                  Select your size and click Add to Bag or Buy Now for immediate checkout via Online Payment (Razorpay) or Cash on Delivery (COD).
+                  Select your size and click Add to Bag or Buy Now for immediate checkout via 100% Secure Online Payment (Razorpay: UPI, Credit/Debit Cards, Net Banking).
                 </div>
               </details>
             </div>
           </div>
+        </div>
+      </section>
+      <!-- ================= PRODUCT REVIEWS ================= -->
+      <section class="section reviews-section" id="reviews">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">CUSTOMER STORIES</p>
+            <h2 id="reviewsHeading">Customer Reviews</h2>
+          </div>
+          <p>
+            Real impressions from verified collectors. Share your olfactory experience.
+          </p>
+        </div>
+
+        <div class="reviews-layout">
+          <div>
+            <div class="review-summary">
+              <strong id="averageRating">5.0</strong>
+              <div>
+                <div class="review-stars">★★★★★</div>
+                <span id="reviewCount">Customer reviews</span>
+              </div>
+            </div>
+
+            <div class="review-list" id="reviewList">
+              <p>Loading customer reviews…</p>
+            </div>
+          </div>
+
+          <!-- REVIEW FORM -->
+          <form class="review-form" id="reviewForm">
+            <input type="hidden" name="productId" id="reviewProductId" value="" />
+            <p class="eyebrow">SHARE YOUR EXPERIENCE</p>
+            <h3>Write a review</h3>
+
+            <label>Your rating</label>
+            <div class="star-picker">
+              <input type="radio" id="star5" name="rating" value="5" checked required />
+              <label for="star5">★</label>
+              <input type="radio" id="star4" name="rating" value="4" />
+              <label for="star4">★</label>
+              <input type="radio" id="star3" name="rating" value="3" />
+              <label for="star3">★</label>
+              <input type="radio" id="star2" name="rating" value="2" />
+              <label for="star2">★</label>
+              <input type="radio" id="star1" name="rating" value="1" />
+              <label for="star1">★</label>
+            </div>
+
+            <label for="reviewName">Your name</label>
+            <input id="reviewName" name="name" maxlength="80" required placeholder="Your Name" />
+
+            <label for="reviewEmail">Email address</label>
+            <input id="reviewEmail" name="email" type="email" placeholder="email@example.com (optional)" />
+
+            <label for="reviewTitle">Review title</label>
+            <input id="reviewTitle" name="title" maxlength="100" required placeholder="A few words about your experience" />
+
+            <label for="reviewMessage">Your review</label>
+            <textarea id="reviewMessage" name="message" maxlength="800" required placeholder="What did you love about this fragrance?"></textarea>
+
+            <button class="btn btn-full" type="submit">Submit review</button>
+            <p id="reviewStatus" aria-live="polite"></p>
+          </form>
         </div>
       </section>
       <section class="section alt">
@@ -74,65 +139,91 @@
       </section>
     </main>
     <div data-footer></div>
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/products.js"></script>
-    <script src="assets/js/store.js"></script>
+    <script src="assets/js/config.js?v=2.2"></script>
+    <script src="assets/js/products.js?v=2.2"></script>
+    <script src="assets/js/store.js?v=2.2"></script>
+    <script src="assets/js/reviews.js?v=2.2"></script>
     <script>
       S369.globalChrome('shop');
-      const id = new URLSearchParams(location.search).get('id') || 'alpha-9';
-      const p = S369.productById(id) || S369.PRODUCTS[0];
-      let size = '30ml', qty = 1;
 
-      document.title = `${p.name} | S369 Perfume`;
-      pImage.src = S369.productImageSrc(p);
-      pImage.referrerPolicy = 'no-referrer';
-      pImage.alt = `S369 ${p.name}`;
-      pName.textContent = p.name;
-      pCrumb.textContent = p.name;
-      pTag.textContent = p.tagline;
-      pDesc.textContent = p.description;
-      pNotes.innerHTML = (p.notes || []).map(n => `<div><b>${n.label}</b><span>${n.value}</span></div>`).join('');
+      async function initProductPage() {
+        const products = await S369.loadProductsFromApi();
+        const id = new URLSearchParams(location.search).get('id') || 'alpha-9';
+        const p = S369.productById(id) || (products && products[0]) || S369.PRODUCTS[0];
+        let size = '30ml', qty = 1;
 
-      function price() {
-        const prices = p.prices || S369.SIZES;
-        const priceInfo = prices[size] || S369.SIZES[size];
-        pPrice.textContent = S369.fmt(priceInfo.price);
-        pMrp.textContent = S369.fmt(priceInfo.mrp);
-      }
+        document.title = `${p.name} | S369 Perfume`;
+        pImage.src = S369.productImageSrc(p);
+        pImage.referrerPolicy = 'no-referrer';
+        pImage.alt = `S369 ${p.name}`;
+        pName.textContent = p.name;
+        pCrumb.textContent = p.name;
+        pTag.textContent = p.tagline;
+        pDesc.textContent = p.description;
+        pNotes.innerHTML = (p.notes || []).map(n => `<div><b>${n.label}</b><span>${n.value}</span></div>`).join('');
 
-      pSizes.innerHTML = Object.keys(S369.SIZES).map(s => `<button class="size-pill ${s === size ? 'active' : ''}" data-size="${s}">${s}</button>`).join('');
-      pSizes.onclick = e => {
-        let b = e.target.closest('[data-size]');
-        if (!b) return;
-        size = b.dataset.size;
-        pSizes.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+        // Initialize reviews for this specific product
+        const revProd = document.getElementById("reviewProductId");
+        if (revProd) revProd.value = p.id;
+        const revHead = document.getElementById("reviewsHeading");
+        if (revHead) revHead.textContent = `Reviews for ${p.name}`;
+        if (typeof S369Reviews !== "undefined") {
+          S369Reviews.init(p.id);
+        }
+
+        function price() {
+          const prices = p.prices || S369.SIZES;
+          const priceInfo = prices[size] || S369.SIZES[size] || { price: p.price || 399, mrp: (p.price ? p.price * 2 : 799) };
+          pPrice.textContent = S369.fmt(priceInfo.price);
+          pMrp.textContent = S369.fmt(priceInfo.mrp);
+        }
+
+        const availableSizes = p.prices ? Object.keys(p.prices) : Object.keys(S369.SIZES);
+        pSizes.innerHTML = availableSizes.map(s => `<button class="size-pill ${s === size ? 'active' : ''}" data-size="${s}">${s}</button>`).join('');
+        pSizes.onclick = e => {
+          let b = e.target.closest('[data-size]');
+          if (!b) return;
+          size = b.dataset.size;
+          pSizes.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+          price();
+        };
+
+        qtyMinus.onclick = () => { qty = Math.max(1, qty - 1); qtyVal.textContent = qty; };
+        qtyPlus.onclick = () => { qty++; qtyVal.textContent = qty; };
+        pAdd.onclick = () => S369.addToCart(p.id, size, qty);
+
+        pBuyNow.onclick = async () => {
+          const success = await S369.addCartToServer(p.id, size, qty);
+          if (success) {
+            location.href = "checkout.html";
+          }
+        };
+
+        function wishState() {
+          const inWish = S369.isInWishlist ? S369.isInWishlist(p.id) : (S369.getWishlistIds ? S369.getWishlistIds().includes(p.id) : false);
+          if (inWish) {
+            pWish.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#5d1f2d" stroke="#5d1f2d" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> <span>Saved in Wishlist</span>`;
+            pWish.style.background = "#fff0f3";
+            pWish.style.borderColor = "#5d1f2d";
+            pWish.style.color = "#5d1f2d";
+          } else {
+            pWish.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> <span>Add to Wishlist</span>`;
+            pWish.style.background = "";
+            pWish.style.borderColor = "";
+            pWish.style.color = "";
+          }
+        }
+        pWish.onclick = async () => {
+          await S369.toggleWishlist(p.id);
+          wishState();
+        };
+        wishState();
         price();
-      };
-
-      qtyMinus.onclick = () => { qty = Math.max(1, qty - 1); qtyVal.textContent = qty; };
-      qtyPlus.onclick = () => { qty++; qtyVal.textContent = qty; };
-      pAdd.onclick = () => S369.addToCart(p.id, size, qty);
-
-      pBuyNow.onclick = async () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          S369.toast("Please login to proceed to checkout.");
-          setTimeout(() => { location.href = "login.html"; }, 700);
-          return;
-        }
-        const success = await S369.addCartToServer(p.id, size, qty);
-        if (success) {
-          location.href = "checkout.html";
-        }
-      };
-
-      function wishState() {
-        pWish.textContent = S369.getWishlist().includes(p.id) ? '♥ Saved to wishlist' : '♡ Save to wishlist';
+        const displayPool = (products && products.length > 0) ? products : S369.PRODUCTS;
+        S369.renderShopGrid(related, displayPool.filter(x => x.id !== p.id).slice(0, 3));
       }
-      pWish.onclick = () => { S369.toggleWishlist(p.id); wishState(); };
-      wishState();
-      price();
-      S369.renderShopGrid(related, S369.PRODUCTS.filter(x => x.id !== p.id).slice(0, 3));
+
+      initProductPage();
     </script>
   </body>
 </html>

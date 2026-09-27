@@ -303,11 +303,11 @@
          JAVASCRIPT
          =============================== -->
 
-    <script src="assets/js/config.js"></script>
+    <script src="assets/js/config.js?v=2.2"></script>
 
-    <script src="assets/js/products.js"></script>
+    <script src="assets/js/products.js?v=2.2"></script>
 
-    <script src="assets/js/store.js"></script>
+    <script src="assets/js/store.js?v=2.2"></script>
 
     <script src="assets/js/reviews.js"></script>
 
@@ -319,41 +319,43 @@
       S369.globalChrome("home");
 
       // ======================================================
-      // FEATURED PRODUCTS
+      // FEATURED PRODUCTS & FRAGRANCE NOTES FROM DB
       // ======================================================
 
-      S369.renderShopGrid(
-        document.getElementById("featuredGrid"),
-        S369.PRODUCTS,
-      );
+      async function renderHomeProducts() {
+        const products = await S369.loadProductsFromApi();
+        const displayProducts = (products && products.length > 0) ? products : S369.PRODUCTS;
 
-      // ======================================================
-      // FRAGRANCE NOTES
-      // ======================================================
+        const gridEl = document.getElementById("featuredGrid");
+        if (gridEl) {
+          S369.renderShopGrid(gridEl, displayProducts);
+        }
 
-      document.getElementById("noteBoard").innerHTML = S369.PRODUCTS.map(
-        (p, i) =>
-          `
-            <a
-              class="note-tile"
-              href="product.html?id=${p.id}"
-            >
+        const noteBoard = document.getElementById("noteBoard");
+        if (noteBoard) {
+          noteBoard.innerHTML = displayProducts.map(
+            (p, i) =>
+              `
+                <a
+                  class="note-tile"
+                  href="product.html?id=${p.id}"
+                >
+                  <span>
+                    0${i + 1}
+                  </span>
+                  <strong>
+                    ${p.name}
+                  </strong>
+                  <p>
+                    ${(p.notes || []).map((n) => n.value).join(" · ")}
+                  </p>
+                </a>
+              `,
+          ).join("");
+        }
+      }
 
-              <span>
-                0${i + 1}
-              </span>
-
-              <strong>
-                ${p.name}
-              </strong>
-
-              <p>
-                ${p.notes.map((n) => n.value).join(" · ")}
-              </p>
-
-            </a>
-            `,
-      ).join("");
+      renderHomeProducts();
 
       // ======================================================
       // REVIEWS
@@ -362,91 +364,62 @@
       S369Reviews.init();
 
       // ======================================================
-      // LOGIN / REGISTER STATUS
+      // LOGIN / REGISTER STATUS WITH SESSION COOKIES
       // ======================================================
 
-      function updateAuthBar() {
+      async function updateAuthBar() {
         const authBar = document.getElementById("authBar");
+        if (!authBar) return;
 
-        const token = localStorage.getItem("token");
+        const user = await S369.checkAuthSession();
 
-        const userData = localStorage.getItem("user");
-
-        // ------------------------------------------
-        // USER IS LOGGED IN
-        // ------------------------------------------
-
-        if (token && userData) {
-          try {
-            const user = JSON.parse(userData);
-
-            authBar.innerHTML = `
-
-              <span class="auth-welcome">
-                Welcome,
-                <strong>${user.name}</strong>
-              </span>
-
-              <button
-                class="auth-button"
-                type="button"
-                onclick="logout()"
-              >
-                Logout
-              </button>
-
-            `;
-          } catch (error) {
-            console.error("User data error:", error);
-
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-
-            showLoginButton();
-          }
+        if (user) {
+          authBar.innerHTML = `
+            <span class="auth-welcome">
+              Welcome, <strong>${user.name}</strong>
+            </span>
+            <a href="account.html" class="auth-button" style="background:#5d1f2d; text-decoration:none;">
+              My Account
+            </a>
+            <button
+              class="auth-button"
+              type="button"
+              onclick="logout()"
+            >
+              Sign Out
+            </button>
+          `;
         } else {
-          // ------------------------------------------
-          // USER IS NOT LOGGED IN
-          // ------------------------------------------
-
           showLoginButton();
         }
       }
 
-      // ======================================================
-      // SHOW LOGIN BUTTON
-      // ======================================================
-
       function showLoginButton() {
         const authBar = document.getElementById("authBar");
-
+        if (!authBar) return;
         authBar.innerHTML = `
-
           <a
             href="login.html"
             class="auth-button"
           >
-            Login / Register
+            Sign In / Register
           </a>
-
         `;
       }
 
-      // ======================================================
-      // LOGOUT
-      // ======================================================
+      async function logout() {
+        try {
+          await fetch("http://localhost:5000/api/auth/logout", {
+            method: "POST",
+            credentials: "include"
+          });
+        } catch (e) {}
 
-      function logout() {
         localStorage.removeItem("token");
-
         localStorage.removeItem("user");
 
         window.location.href = "index.html";
       }
-
-      // ======================================================
-      // INITIAL AUTH CHECK
-      // ======================================================
 
       updateAuthBar();
     </script>
